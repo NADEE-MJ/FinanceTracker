@@ -56,10 +56,7 @@ class Stock(Resource):
     @marshal_with(resourceFields)
     def post(self):
         args = stockPostArgs.parse_args()
-        tempStock = StockModel.query.filter_by(ticker=args['ticker'].upper()).first()
-        if tempStock:
-            if tempStock.ticker.lower() == args['ticker'].lower():
-                abort(409, message="stock already in database use patch or delete to change")
+        postCheck(args)
 
         currentPrice = yf.Ticker(args['ticker']).info.get('regularMarketPrice', {})
         marketValue = args['numberOfShares'] * currentPrice
@@ -80,6 +77,18 @@ class Stock(Resource):
         message = {"message" : "%s successfully deleted" % (stock.ticker)}
 
         return message
+
+def postCheck(args):
+    stock = StockModel.query.filter_by(ticker=args['ticker'].upper()).first()
+    if stock:
+        if stock.ticker == args['ticker'].upper():
+            abort(409, message="stock already in database use patch or delete to change")
+    
+    currentPrice = yf.Ticker(args['ticker']).info.get('regularMarketPrice', {})
+    if not currentPrice:
+        abort(404, message="not a valid stock ticker")
+    
+    return currentPrice
 
 def existsInDB(args):
     if args['id']:
