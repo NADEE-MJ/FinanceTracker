@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 
-import yfinance as yf
+from stockData import getCurrentStockPrice
 
 app = Flask(__name__)
 api = Api(app)
@@ -20,7 +20,7 @@ class StockModel(db.Model):
         return f"Stock(ticker = {self.ticker}, currentPrice = {self.currentPrice}, numberOfShares = {self.numberOfShares}, marketValue = {self.marketValue})"
 
     def updateStock(self):
-        self.currentPrice = yf.Ticker(self.ticker).info.get('regularMarketPrice', {})
+        self.currentPrice = getCurrentStockPrice(self.ticker)
         self.marketValue = self.currentPrice * self.numberOfShares
         db.session.commit()
 
@@ -65,7 +65,7 @@ class Stock(Resource):
         args = stockPostArgs.parse_args()
         postCheck(args)
 
-        currentPrice = yf.Ticker(args['ticker']).info.get('regularMarketPrice', {})
+        currentPrice = getCurrentStockPrice(args['ticker'])
         marketValue = args['numberOfShares'] * currentPrice
         stock = StockModel(ticker = args['ticker'].upper(), currentPrice = currentPrice, numberOfShares = args['numberOfShares'], marketValue = marketValue)
 
@@ -91,7 +91,7 @@ def postCheck(args):
         if stock.ticker == args['ticker'].upper():
             abort(409, message="stock already in database use patch or delete to change")
     
-    currentPrice = yf.Ticker(args['ticker']).info.get('regularMarketPrice', {})
+    currentPrice = getCurrentStockPrice(args['ticker'])
     if not currentPrice:
         abort(404, message="not a valid stock ticker")
     

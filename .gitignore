@@ -133,3 +133,9 @@ dmypy.json
 
 # VS Code Files
 /.vscode
+
+# testing files
+/test
+
+# API key files
+AlphaVantageAPIKey.txt
