@@ -46,31 +46,34 @@ class Stocks(Resource):
 
         return stocks
 
+class Stock(Resource):
     @marshal_with(resourceFields)
-    def post(self, stockID):
-        exists = StockModel.query.filter_by(id=stockID).first()
-        if exists:
-            abort(409, message="Stock ID already used")
+    def get(self):
+        args = stockGetArgs.parse_args()
+        stock = existsInDB(args)
 
+        return stock
+
+    @marshal_with(resourceFields)
+    def post(self):
         args = stockPostArgs.parse_args()
+        tempStock = StockModel.query.filter_by(ticker=args['ticker'].upper()).first()
+        if tempStock:
+            if tempStock.ticker.lower() == args['ticker'].lower():
+                abort(409, message="stock already in database use patch or delete to change")
+
         currentPrice = yf.Ticker(args['ticker']).info.get('regularMarketPrice', {})
         marketValue = args['numberOfShares'] * currentPrice
-        stock = StockModel(ticker = args['ticker'], currentPrice = currentPrice, numberOfShares = args['numberOfShares'], marketValue = marketValue)
+        stock = StockModel(ticker = args['ticker'].upper(), currentPrice = currentPrice, numberOfShares = args['numberOfShares'], marketValue = marketValue)
 
         db.session.add(stock)
         db.session.commit()
 
         return stock, 201
 
-class Stock(Resource):
-    @marshal_with(resourceFields)
-    def get(self):
-        stock = existsInDB()
-
-        return stock
-
     def delete(self):
-        stock = existsInDB()
+        args = stockGetArgs.parse_args()
+        stock = existsInDB(args)
 
         db.session.delete(stock)
         db.session.commit()
@@ -79,21 +82,24 @@ class Stock(Resource):
 
         return message
 
-def existsInDB():
-    args = stockGetArgs.parse_args()
+def existsInDB(args):
     if args['id']:
         stock = StockModel.query.get_or_404(args['id'])
     elif args['ticker']:
-        stock = StockModel.query.filter_by(ticker=args['ticker']).first_or_404()
+        stock = StockModel.query.filter_by(ticker=args['ticker'].upper()).first_or_404()
     else:
         abort(400, message="please give a ticker or id to lookup stock")
     
     return stock
 
-api.add_resource(Stocks, "/stocks", "/stocks/<int:stockID>")
-api.add_resource(Stock, "/stock")
+api.add_resource(Stocks, "/stocks", methods=["GET"])
+api.add_resource(Stock, "/stock", methods=["GET", "POST", "DELETE"])
+
+@app.route("/", methods=["GET"])
+def index():
+    return "Finance Tracker API"
 
 if __name__ == "__main__":
-    app.run(debug=True) #LocalHost
-    # app.run(debug=True, host="0.0.0.0") #host on Network
+    # app.run(debug=True) #LocalHost
+    app.run(debug=True, host="0.0.0.0") #host on Network
     # app.run(host="0.0.0.0") #host on network no debug
