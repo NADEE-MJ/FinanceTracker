@@ -19,6 +19,11 @@ class StockModel(db.Model):
     def __repr__(self):
         return f"Stock(ticker = {self.ticker}, currentPrice = {self.currentPrice}, numberOfShares = {self.numberOfShares}, marketValue = {self.marketValue})"
 
+    def updateStock(self):
+        self.currentPrice = yf.Ticker(self.ticker).info.get('regularMarketPrice', {})
+        self.marketValue = self.currentPrice * self.numberOfShares
+        db.session.commit()
+
 #Run the following line the first time you run the script to create the database file then comment it out again
 # db.create_all()
 
@@ -41,6 +46,7 @@ resourceFields = {
 class Stocks(Resource):
     @marshal_with(resourceFields)
     def get(self):
+        updateAllStocks()
         stocks = StockModel.query.all()
 
         return stocks
@@ -50,6 +56,7 @@ class Stock(Resource):
     def get(self):
         args = stockGetArgs.parse_args()
         stock = existsInDB(args)
+        stock.updateStock()
 
         return stock
 
@@ -99,6 +106,12 @@ def existsInDB(args):
         abort(400, message="please give a ticker or id to lookup stock")
     
     return stock
+
+def updateAllStocks():
+    allStocks = StockModel.query.all()
+
+    for stock in allStocks:
+        stock.updateStock()
 
 api.add_resource(Stocks, "/stocks", methods=["GET"])
 api.add_resource(Stock, "/stock", methods=["GET", "POST", "DELETE"])
