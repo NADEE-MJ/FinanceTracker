@@ -1,35 +1,7 @@
-from flask import Flask
-from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
-from flask_sqlalchemy import SQLAlchemy
-
-from stockData import getCurrentStockPrice
-
-app = Flask(__name__)
-api = Api(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-db = SQLAlchemy(app)
-
-class StockModel(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ticker = db.Column(db.String(20), unique=True)
-    currentPrice = db.Column(db.Float)
-    numberOfShares = db.Column(db.Float)
-    marketValue = db.Column(db.Float)
-
-    def __repr__(self):
-        return f"Stock(ticker = {self.ticker}, currentPrice = {self.currentPrice}, numberOfShares = {self.numberOfShares}, marketValue = {self.marketValue})"
-
-    def updateStock(self):
-        self.currentPrice = getCurrentStockPrice(self.ticker)
-        self.marketValue = self.currentPrice * self.numberOfShares
-        db.session.commit()
-
-    def updateShares(self, newShares):
-        self.numberOfShares = newShares
-        self.updateStock()
-
-#Run the following line the first time you run the script to create the database file then comment it out again
-# db.create_all()
+from flask_restful import Resource, reqparse, marshal_with, abort
+from app import resourceFields, db
+from stock_model import StockModel
+from stock_crypto_apis import get_current_stock_price
 
 stockPostArgs = reqparse.RequestParser()
 stockPostArgs.add_argument("ticker", type=str, help="Must Include a ticker", required=True)
@@ -43,22 +15,6 @@ stockPatchArgs = reqparse.RequestParser()
 stockPatchArgs.add_argument("id", type=int)
 stockPatchArgs.add_argument("ticker", type=str)
 stockPatchArgs.add_argument("newNumberOfShares", type=float, help="must include newNumberOfShares", required=True)
-
-resourceFields = {
-    'id': fields.Integer,
-    'ticker': fields.String,
-    'currentPrice': fields.Float,
-    'numberOfShares': fields.Float,
-    'marketValue': fields.Float
-}
-
-class Stocks(Resource):
-    @marshal_with(resourceFields)
-    def get(self):
-        updateAllStocks()
-        stocks = StockModel.query.all()
-
-        return stocks
 
 class Stock(Resource):
     @marshal_with(resourceFields)
@@ -74,7 +30,7 @@ class Stock(Resource):
         args = stockPostArgs.parse_args()
         postCheck(args)
 
-        currentPrice = getCurrentStockPrice(args['ticker'])
+        currentPrice = get_current_stock_price(args['ticker'])
         marketValue = args['numberOfShares'] * currentPrice
         stock = StockModel(ticker = args['ticker'].upper(), currentPrice = currentPrice, numberOfShares = args['numberOfShares'], marketValue = marketValue)
 
@@ -109,7 +65,7 @@ def postCheck(args):
         if stock.ticker == args['ticker'].upper():
             abort(409, message="stock already in database use patch or delete to change")
     
-    currentPrice = getCurrentStockPrice(args['ticker'])
+    currentPrice = get_current_stock_price(args['ticker'])
     if not currentPrice:
         abort(404, message="not a valid stock ticker")
     
@@ -124,21 +80,3 @@ def existsInDB(args):
         abort(400, message="please give a ticker or id to lookup stock")
     
     return stock
-
-def updateAllStocks():
-    allStocks = StockModel.query.all()
-
-    for stock in allStocks:
-        stock.updateStock()
-
-api.add_resource(Stocks, "/stocks", methods=["GET"])
-api.add_resource(Stock, "/stock", methods=["GET", "POST", "DELETE", "PATCH"])
-
-@app.route("/", methods=["GET"])
-def index():
-    return "Finance Tracker API"
-
-if __name__ == "__main__":
-    # app.run(debug=True) #LocalHost
-    app.run(debug=True, host="0.0.0.0") #host on Network
-    # app.run(host="0.0.0.0") #host on network no debug

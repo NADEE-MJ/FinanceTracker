@@ -1,4 +1,5 @@
 import requests
+import yfinance as yf
 
 base = 'https://www.alphavantage.co/'
 f = open('AlphaVantageAPIKey.txt', 'r')
@@ -12,7 +13,7 @@ def createKeyFile():
     f.write(key)
     f.close()
 
-def getCurrentStockPrice(ticker):
+def get_current_stock_price(ticker):
     params = {
         'function': 'GLOBAL_QUOTE',
         'symbol': ticker,
@@ -21,10 +22,14 @@ def getCurrentStockPrice(ticker):
     }
 
     response = requests.get(base + 'query', params=params)
-    stockPrice = response.json().get('Global Quote', {}).get('05. price', {})
+    if response.status_code != 200:
+        stockPrice = response.json().get('Global Quote', {}).get('05. price', {})
+        return float(stockPrice)
+    else:
+        stock_price = yf.Ticker(ticker).info.get('regularMarketPrice', {})
+        return stock_price
 
-    return float(stockPrice)
 
 if __name__ == "__main__":
     createKeyFile()
-    print(getCurrentStockPrice('SPY'))
+    print(get_current_stock_price('SPY'))
