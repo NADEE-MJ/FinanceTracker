@@ -1,4 +1,6 @@
+import imp
 from app import db
+from os.path import exists
 from stock_crypto_apis import get_current_stock_price
 
 class StockModel(db.Model):
@@ -20,8 +22,7 @@ class StockModel(db.Model):
         self.numberOfShares = newShares
         self.updateStock()
 
-#run this file once to create the db file in the main directory
-if __name__ == "__main__":
+if not exists("database.db"):
     print("Creating database tables...")
     db.create_all()
     print("Done!")

@@ -138,4 +138,4 @@ dmypy.json
 /test
 
 # API key files
-AlphaVantageAPIKey.txt
+ALPHA_VANTAGE_API_KEY.txt
