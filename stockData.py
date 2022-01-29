@@ -5,7 +5,7 @@ f = open('AlphaVantageAPIKey.txt', 'r')
 key = f.readline()
 f.close()
 
-#run main to create alpha vantage api key file and test it out
+#run file to create alpha vantage api key file and test it out
 def createKeyFile():
     key = input("Enter alpha vantage api key: ")
     f = open('AlphaVantageAPIKey.txt', 'w')

@@ -24,6 +24,10 @@ class StockModel(db.Model):
         self.marketValue = self.currentPrice * self.numberOfShares
         db.session.commit()
 
+    def updateShares(self, newShares):
+        self.numberOfShares = newShares
+        self.updateStock()
+
 #Run the following line the first time you run the script to create the database file then comment it out again
 # db.create_all()
 
@@ -34,6 +38,11 @@ stockPostArgs.add_argument("numberOfShares", type=float, help="Must Include numb
 stockGetArgs = reqparse.RequestParser()
 stockGetArgs.add_argument("id", type=int)
 stockGetArgs.add_argument("ticker", type=str)
+
+stockPatchArgs = reqparse.RequestParser()
+stockPatchArgs.add_argument("id", type=int)
+stockPatchArgs.add_argument("ticker", type=str)
+stockPatchArgs.add_argument("newNumberOfShares", type=float, help="must include newNumberOfShares", required=True)
 
 resourceFields = {
     'id': fields.Integer,
@@ -73,6 +82,15 @@ class Stock(Resource):
         db.session.commit()
 
         return stock, 201
+
+    @marshal_with(resourceFields)
+    def patch(self):
+        args = stockPatchArgs.parse_args()
+        stock = existsInDB(args)
+
+        stock.updateShares(args['newNumberOfShares'])
+
+        return stock, 200
 
     def delete(self):
         args = stockGetArgs.parse_args()
@@ -114,7 +132,7 @@ def updateAllStocks():
         stock.updateStock()
 
 api.add_resource(Stocks, "/stocks", methods=["GET"])
-api.add_resource(Stock, "/stock", methods=["GET", "POST", "DELETE"])
+api.add_resource(Stock, "/stock", methods=["GET", "POST", "DELETE", "PATCH"])
 
 @app.route("/", methods=["GET"])
 def index():
