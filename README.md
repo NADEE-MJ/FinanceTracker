@@ -8,9 +8,6 @@ still need to write this...
 still need to write this...
 
 ## Currently Working on
-1. split up the API into different files to make it easier to follow
-2. make code style more consistent, make functions and variables snake_case instead of camelCase per python style guide 
-
 ### FinanceTrackingAPI features to implement
 1. use Oauth to authenticate API users
 2. create different database structure, need to have users link to accounts, which link to stocks/cryptos
