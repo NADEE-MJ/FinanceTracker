@@ -4,11 +4,11 @@ import yfinance as yf
 base = 'https://www.alphavantage.co/'
 
 def create_key_file():
-    key = input("Enter alpha vantage api key: ")
+    key = input('Enter alpha vantage api key: ')
     f = open('ALPHA_VANTAGE_API_KEY.txt', 'w')
     f.write(key)
     f.close()
-    print("API key file created!")
+    print('API key file created!')
 
 try:
     f = open('ALPHA_VANTAGE_API_KEY.txt', 'r')
@@ -33,5 +33,5 @@ def get_current_stock_price(ticker):
         stock_price = yf.Ticker(ticker).info.get('regularMarketPrice', {})
         return stock_price
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     print(get_current_stock_price('SPY'))
