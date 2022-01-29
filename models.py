@@ -19,3 +19,9 @@ class StockModel(db.Model):
     def updateShares(self, newShares):
         self.numberOfShares = newShares
         self.updateStock()
+
+#run this file once to create the db file in the main directory
+if __name__ == "__main__":
+    print("Creating database tables...")
+    db.create_all()
+    print("Done!")

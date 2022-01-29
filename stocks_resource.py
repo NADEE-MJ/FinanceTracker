@@ -1,6 +1,6 @@
 from flask_restful import Resource, marshal_with
 from app import resourceFields
-from stock_model import StockModel
+from models import StockModel
 
 class Stocks(Resource):
     @marshal_with(resourceFields)

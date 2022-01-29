@@ -9,7 +9,3 @@ api.add_resource(Stock, "/stock", methods=["GET", "POST", "DELETE", "PATCH"])
 def index():
     return "Finance Tracker API"
 
-if __name__ == "__main__":
-    # app.run(debug=True) #LocalHost
-    app.run(debug=True, host="0.0.0.0") #host on Network
-    # app.run(host="0.0.0.0") #host on network no debug

@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, marshal_with, abort
 from app import resourceFields, db
-from stock_model import StockModel
+from models import StockModel
 from stock_crypto_apis import get_current_stock_price
 
 stockPostArgs = reqparse.RequestParser()

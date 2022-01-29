@@ -15,6 +15,10 @@ resourceFields = {
     'marketValue': fields.Float
 }
 
-#run this file once to create the db file in the main directory
 if __name__ == "__main__":
-    db.create_all()
+
+    from views import *
+
+    # app.run(debug=True) #LocalHost
+    app.run(debug=True, host="0.0.0.0") #host on Network
+    # app.run(host="0.0.0.0") #host on network no debug
