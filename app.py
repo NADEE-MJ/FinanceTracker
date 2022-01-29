@@ -19,6 +19,6 @@ if __name__ == '__main__':
     from views import *
 
     #different ways to start flask server
-    #app.run(debug=True) #LocalHost
-    app.run(debug=True, host='0.0.0.0') #host on Network
-    #app.run(host='0.0.0.0') #host on network no debug
+    app.run(debug=True) #localhost
+    # app.run(debug=True, host='0.0.0.0') #host on network
+    # app.run(host='0.0.0.0') #host on network no debug

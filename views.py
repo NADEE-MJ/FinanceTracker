@@ -8,4 +8,3 @@ api.add_resource(Stock, '/stock', methods=['GET', 'POST', 'DELETE', 'PATCH'])
 @app.route('/', methods=['GET'])
 def index():
     return 'Finance Tracker API'
-
