@@ -8,7 +8,8 @@ from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 
-ACCESS_EXPIRES = timedelta(seconds=60)
+ACCESS_EXPIRES = timedelta(minutes=30)
+REFRESH_EXPIRES = timedelta(days=30)
 
 def create_code_file():
     code = input('Enter super secret code: ')
@@ -26,6 +27,7 @@ except FileNotFoundError:
 
 app.config['JWT_SECRET_KEY'] = 'super-secret' #NEED TO CHANGE THIS TO LOAD FROM FILE, BUT FOR TESTING THIS IS FINE
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = ACCESS_EXPIRES
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = REFRESH_EXPIRES
 app.config['JWT_TOKEN_LOCATION'] = ['json', 'headers']
 jwt = JWTManager(app)
 

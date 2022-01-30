@@ -1,5 +1,4 @@
 from app import db
-from flask_login import UserMixin
 from os.path import exists
 from sqlalchemy.sql import func
 from flask_jwt_extended import create_access_token, create_refresh_token
@@ -9,7 +8,7 @@ class TokenBlocklist(db.Model):
     jti = db.Column(db.String(36), nullable=False)
     revoked_at = db.Column(db.DateTime, nullable=False)
 
-class UserModel(db.Model, UserMixin):
+class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
     username = db.Column(db.String(150), unique=True)
@@ -21,12 +20,20 @@ class UserModel(db.Model, UserMixin):
     def __repr__(self):
         return f'User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})'
 
-    def login(self):
+    def fresh_login(self):
         additional_claims = {'email': self.email,
                             'id': self.id}
 
-        tokens = {'access_token': create_access_token(identity=self.username, additional_claims=additional_claims), 
+        tokens = {'access_token': create_access_token(identity=self.username, additional_claims=additional_claims, fresh=True), 
                 'refresh_token': create_refresh_token(identity=self.username)}
+
+        return tokens
+
+    def stale_login(self):
+        additional_claims = {'email': self.email,
+                            'id': self.id}
+
+        tokens = create_access_token(identity=self.username, additional_claims=additional_claims, fresh=False)
 
         return tokens
 

@@ -1,6 +1,5 @@
-from flask_login import current_user
 from flask_restful import Resource, reqparse, abort
-from flask_jwt_extended import jwt_required, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from datetime import datetime, timezone
 from models import UserModel, TokenBlocklist
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -25,12 +24,12 @@ class User(Resource):
         user = UserModel.query.filter_by(email=args['email']).first()
         if user:
             if check_password_hash(user.password, args['password']):
-                #get access and refresh token
-
-                tokens = user.login()
+                tokens = user.fresh_login()
                 return {'message': 'succesfully logged in',
                         'access_token': tokens['access_token'],
                         'refresh_token': tokens['refresh_token']}
+            else:
+                abort(400, message='Password is incorrect.')
         else:
             abort(404, message='Email not found')
 
@@ -65,7 +64,6 @@ class User(Resource):
     @jwt_required()
     def delete(self):
         jti = get_jwt()["jti"]
-        current_user = get_current_user(get_jwt()['id'])
         now = datetime.now(timezone.utc)
         db.session.add(TokenBlocklist(jti=jti, revoked_at=now))
         db.session.commit()
@@ -73,7 +71,13 @@ class User(Resource):
 
 class Refresh(Resource):
     #refresh access_token
-    pass
+    @jwt_required(refresh=True)
+    def put(self):
+        username = get_jwt_identity()
+        current_user = UserModel.query.filter_by(username=username).first()
+        token = current_user.stale_login()
+
+        return {'access_token': token}
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
@@ -86,6 +90,4 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
 
     return token is not None
 
-def get_current_user(id):
-    current_user = UserModel.query.get(id)
-    return current_user
+
