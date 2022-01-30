@@ -1,6 +1,8 @@
 """
 This file is similar to unit testing, actually might try to make a unit test file later
-comment out parts of the code to test different parts of the api, certain parts rely on other parts
+comment out parts of the code to test different parts of the api, certain parts rely on other parts,
+one thing this does not test is tokens expiring, but can change ACCESS_EXPIRES in app.py to
+something short like seconds=1 and then run this file to see that it will not allow, expired tokens as well
 """
 
 import requests
