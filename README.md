@@ -10,7 +10,7 @@ still need to write this...
 ## Currently Working on
 ### Finance tracker API Tree
 not final, just some thoughts
-'''
+```
 /
 +--user
 |  +--login
@@ -28,7 +28,7 @@ not final, just some thoughts
 |  +--remove_crypto
 |  +--update_crypto
 |  +--get_crypto_info
-'''
+```
 ### FinanceTrackingAPI features to implement
 1. use Flask-JWT-extended to authenticate API users
     1. give users ability to login, logout using token based access system
