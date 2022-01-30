@@ -63,11 +63,8 @@ def main():
     for i in range(times_to_request):
         threads.append(ReuqestThread(id=i, base=base, params=params))
     
-    for thread in threads:
-        thread.start()
-
-    for thread in threads:
-        thread.join()
+    [thread.start() for thread in threads]
+    [thread.join() for thread in threads]
     
     print('main thread done')
 
