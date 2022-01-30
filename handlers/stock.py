@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse, marshal_with, abort
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
+
 from app import stock_resource_fields, db
 from models import StockModel, UserModel
 
@@ -28,7 +29,8 @@ class Stock(Resource):
     @jwt_required()
     def get(self):
         args = stock_get_args.parse_args()
-        stock = user_has_stock(get_jwt_identity(), args['ticker'])
+        current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
+        stock = user_has_stock(current_user.id, args['ticker'])
         if stock:
             return stock, 200
         
@@ -38,11 +40,12 @@ class Stock(Resource):
     @jwt_required(fresh=True)
     def post(self):
         args = stock_post_args.parse_args()
-        stock = user_has_stock(get_jwt_identity(), args['ticker'])
+        current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
+        stock = user_has_stock(current_user.id, args['ticker'])
         if stock:
             abort(400, message='user already owns that stock, try a patch request to update number of shares or delete to remove it')
 
-        stock = StockModel(ticker=args['ticker'].upper(), number_of_shares=args['number_of_shares'], cost_per_share=args['cost_per_share'], owner=get_jwt()['id'])
+        stock = StockModel(ticker=args['ticker'].upper(), number_of_shares=args['number_of_shares'], cost_per_share=args['cost_per_share'], owner=current_user.id)
 
         db.session.add(stock)
         db.session.commit()
@@ -53,7 +56,8 @@ class Stock(Resource):
     @jwt_required(fresh=True)
     def patch(self):
         args = stock_patch_args.parse_args()
-        stock = user_has_stock(get_jwt_identity(), args['ticker'])
+        current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
+        stock = user_has_stock(current_user.id, args['ticker'])
         if stock:
             stock.update_shares(args['new_number_of_shares'])
             return stock, 200
@@ -63,7 +67,8 @@ class Stock(Resource):
     @jwt_required(fresh=True)
     def delete(self):
         args = stock_get_args.parse_args()
-        stock = user_has_stock(get_jwt_identity(), args['ticker'])
+        current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
+        stock = user_has_stock(current_user.id, args['ticker'])
         if stock:
             db.session.delete(stock)
             db.session.commit()
@@ -72,9 +77,8 @@ class Stock(Resource):
 
         abort(404, message='user does not own that stock')
 
-def user_has_stock(username, ticker):
-    current_user = UserModel.query.filter_by(username=username).first()
-    stocks = StockModel.query.filter_by(owner=current_user.id).all()
+def user_has_stock(id, ticker):
+    stocks = StockModel.query.filter_by(owner=id).all()
     for stock in stocks:
         if stock.ticker == ticker.upper():
             return stock

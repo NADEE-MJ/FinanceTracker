@@ -1,7 +1,8 @@
-from app import db
 from os.path import exists
 from sqlalchemy.sql import func
 from flask_jwt_extended import create_access_token, create_refresh_token
+
+from app import db
 
 class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -21,19 +22,13 @@ class UserModel(db.Model):
         return f'User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})'
 
     def fresh_login(self):
-        additional_claims = {'email': self.email,
-                            'id': self.id}
-
-        tokens = {'access_token': create_access_token(identity=self.username, additional_claims=additional_claims, fresh=True), 
+        tokens = {'access_token': create_access_token(identity=self.username, fresh=True), 
                 'refresh_token': create_refresh_token(identity=self.username)}
 
         return tokens
 
     def stale_login(self):
-        additional_claims = {'email': self.email,
-                            'id': self.id}
-
-        tokens = create_access_token(identity=self.username, additional_claims=additional_claims, fresh=False)
+        tokens = create_access_token(identity=self.username, fresh=False)
 
         return tokens
 

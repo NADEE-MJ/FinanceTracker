@@ -1,9 +1,10 @@
 from flask_restful import Resource, reqparse, abort
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from datetime import datetime, timezone
-from models import UserModel, TokenBlocklist
 from werkzeug.security import generate_password_hash, check_password_hash
+
 from app import db, jwt
+from models import UserModel, TokenBlocklist
 
 login_args = reqparse.RequestParser()
 login_args.add_argument('email', type=str, help='Must Include an email', required=True)

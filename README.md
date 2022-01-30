@@ -1,7 +1,7 @@
 # FinanceTracker
-This is the API for a budgeting app I would like to create, possible features are talked about at the bottom of the page. Possible names for the app are BudgetApp or SafeBets.
+This is the API for a budgeting app I would like to create, possible features for the app are talked about at the bottom of the page. Possible names for the app are BudgetApp or SafeBets.
 
-## How to setup the API
+## How to set up the API
 still need to write this...
 
 ## How to use the API
@@ -11,23 +11,21 @@ still need to write this...
 ### API Tree Diagram
 (not final)
 ```
-/ --> methods=['GET'] --> possibly a documentation page in HTML on how to use the API
+/ --> methods=['GET'] --> returns github page for this project
 │── user --> methods=['POST', 'DELETE', 'PUT'] --> login, logout, and register users
-│   │── refresh --> methods=['PUT'] --> refresh access_token
+│   │── refresh --> methods=['PUT'] --> refresh access_token based on refresh token
 │── stocks --> methods=['GET'] --> returns all stocks owned by a user
-│── stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock
+│── stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock --> for a usr
 │── cryptos --> methods=['GET'] --> returns all cryptos owned by a user
-│── crypto --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one crypto, add a crypto, update a crypto, or delete a crypto
+│── crypto --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one crypto, add a crypto, update a crypto, or delete a crypto --> for a user
 ```
 
 ### FinanceTrackingAPI features to implement
-1. add crypto model and views in API
-2. need to figure out how to remove old tokens from blocklist once implemented, maybe through a super user command
-3. add super user or admin functionallity to view all users and all user info, maybe create a custom decorator
+1. need to figure out how to remove old tokens from blocklist once implemented, maybe through a super user command
+2. add super user or admin functionallity to view all users and all user info, maybe create a custom decorator
 
-
-## Budget App Features (Will work on in the future)
-I plan on creating this app in dart using flutter, but am trying to figure out how the backend would work first, then will learn how to create the frontend.
+## Future Budget App Features
+I plan on creating this app in dart using flutter, creating back end api now, will implement front-end later.
 ### Budgeting Features to Implement
 1. given monthly income and amount to save/spend in different catagories (food, shopping, rent, etc...) it will show you how much you have to spend each month and where/what to spend it on
     1. manually enter transactions in different accounts
