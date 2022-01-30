@@ -1,8 +1,6 @@
 from app import api, app
-from handlers.stocks import Stocks
-from handlers.cryptos import Cryptos
-from handlers.crypto import Crypto
-from handlers.stock import Stock
+from handlers.crypto import Crypto, Cryptos
+from handlers.stock import Stock, Stocks
 from handlers.user import User, Refresh
 
 api.add_resource(Stocks, '/stocks', methods=['GET'])
