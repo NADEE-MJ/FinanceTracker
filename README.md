@@ -8,12 +8,34 @@ still need to write this...
 still need to write this...
 
 ## Currently Working on
+### Finance tracker API Tree
+not final, just some thoughts
+'''
+/
++--user
+|  +--login
+|  +--logout
+|  +--refresh_key
++--stocks
++--stock
+|  +--add_stock
+|  +--remove_stock
+|  +--update_stock
+|  +--get_stock_info
++--cryptos
++--crypto
+|  +--add_crypto
+|  +--remove_crypto
+|  +--update_crypto
+|  +--get_crypto_info
+'''
 ### FinanceTrackingAPI features to implement
-1. use Oauth to authenticate API users
-2. create different database structure, need to have users link to accounts, which link to stocks/cryptos
-    1. users must provide a password in order to access account info, not sure how to implement this
-3. add more info to track on stocks
-4. add cryptos to API
+1. use Flask-JWT-extended to authenticate API users
+    1. give users ability to login, logout using token based access system
+    2. users register their info into the database and when they login they are given an access and refresh key to access the api
+2. create user model and link to stock and crypto db models
+3. update stock model
+4. add crypto model and views in API
 
 ## Budget App Features (Will work on in the future)
 I plan on creating this app in dart using flutter, but am trying to figure out how the backend would work first, then will learn how to create the frontend.

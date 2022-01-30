@@ -1,3 +1,4 @@
+from urllib.error import HTTPError
 import requests
 import yfinance as yf
 
@@ -25,11 +26,14 @@ def get_current_stock_price(ticker):
         'apikey': key
     }
 
-    response = requests.get(base + 'query', params=params)
-    if response.status_code != 200:
+    try:
+        response = requests.get(base + 'query', params=params)
+    
+        if response.status_code != 200:
+            raise HTTPError 
         stock_price = response.json().get('Global Quote', {}).get('05. price', {})
         return float(stock_price)
-    else:
+    except HTTPError:
         stock_price = yf.Ticker(ticker).info.get('regularMarketPrice', {})
         return stock_price
 

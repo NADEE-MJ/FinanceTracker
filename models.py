@@ -1,4 +1,3 @@
-import imp
 from app import db
 from os.path import exists
 from stock_crypto_apis import get_current_stock_price
