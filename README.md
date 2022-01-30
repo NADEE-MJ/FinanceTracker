@@ -12,10 +12,8 @@ still need to write this...
 (not final)
 ```
 / --> methods=['GET'] --> possibly a documentation page in HTML on how to use the API
-│── user --> redirect to documentation page
-│   │── /login --> methods=['POST'] --> login user grant access and refresh tokens
-│   │── /logout --> methods=['DELETE'] --> logout user revoke access and refresh tokens
-│   │── /refresh --> methods=['POST'] --> refresh access token via a refresh token
+│── user --> methods=['POST', 'DELETE', 'PUT'] --> login, logout, and register users
+│   │── refresh --> methods=['PUT'] --> refresh access_token
 │── stocks --> methods=['GET'] --> returns all stocks owned by a user
 │── stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock
 │── cryptos --> methods=['GET'] --> returns all cryptos owned by a user
@@ -23,14 +21,10 @@ still need to write this...
 ```
 
 ### FinanceTrackingAPI features to implement
-1. use Flask-JWT-extended to authenticate API users
-    1. give users ability to login, logout using token based access system
-    2. users register their info into the database and when they login they are given an access and refresh key to access the api
-2. create user model and link to stock and crypto db models
-3. update stock model to include more stock info relating to user
-4. add crypto model and views in API
-5. offload alphavantage and yfianance API calls to client
-6. need to figure out how to remove old tokens from blocklist once implemented
+1. add crypto model and views in API
+2. need to figure out how to remove old tokens from blocklist once implemented, maybe through a super user command
+3. add super user or admin functionallity to view all users and all user info, maybe create a custom decorator
+
 
 ## Budget App Features (Will work on in the future)
 I plan on creating this app in dart using flutter, but am trying to figure out how the backend would work first, then will learn how to create the frontend.

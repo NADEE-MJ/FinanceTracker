@@ -8,8 +8,21 @@ from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 
-ACCESS_EXPIRES = timedelta(hours=1)
+ACCESS_EXPIRES = timedelta(seconds=60)
 
+def create_code_file():
+    code = input('Enter super secret code: ')
+    f = open('SUPER_SECRET_CODE.txt', 'w')
+    f.write(code)
+    f.close()
+    print('super secret code file created!')
+
+try:
+    f = open('SUPER_SECRET_CODE.txt', 'r')
+    code = f.readline()
+    f.close()
+except FileNotFoundError:
+    create_code_file()
 
 app.config['JWT_SECRET_KEY'] = 'super-secret' #NEED TO CHANGE THIS TO LOAD FROM FILE, BUT FOR TESTING THIS IS FINE
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = ACCESS_EXPIRES

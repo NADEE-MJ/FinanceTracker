@@ -24,17 +24,13 @@ class User(Resource):
 
         user = UserModel.query.filter_by(email=args['email']).first()
         if user:
-            if check_password_hash(user.password, args['password']) and user.log_in == False:
+            if check_password_hash(user.password, args['password']):
                 #get access and refresh token
 
                 tokens = user.login()
                 return {'message': 'succesfully logged in',
                         'access_token': tokens['access_token'],
                         'refresh_token': tokens['refresh_token']}
-            elif user.log_in == True:
-                abort(409, message='Already logged in')
-            else:
-                abort(400, message='Password is incorrect.')
         else:
             abort(404, message='Email not found')
 
@@ -71,10 +67,17 @@ class User(Resource):
         jti = get_jwt()["jti"]
         current_user = get_current_user(get_jwt()['id'])
         now = datetime.now(timezone.utc)
-        current_user.logoff()
         db.session.add(TokenBlocklist(jti=jti, revoked_at=now))
         db.session.commit()
         return {'message': 'user logged out, access token revoked'}
+
+class Refresh(Resource):
+    #refresh access_token
+    pass
+
+@jwt.expired_token_loader
+def my_expired_token_callback(jwt_header, jwt_payload):
+    return {'code': 'dave', 'error': 'I can\'t let you do that'}, 401
 
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:

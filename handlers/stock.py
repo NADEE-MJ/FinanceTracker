@@ -1,6 +1,6 @@
 from flask_login import current_user
 from flask_restful import Resource, reqparse, marshal_with, abort
-from flask_jwt_extended import jwt_required, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from sqlalchemy import false
 from app import stock_resource_fields, db, jwt
 from models import StockModel, TokenBlocklist
@@ -37,7 +37,7 @@ class Stock(Resource):
         if stock:
             abort(400, message='user already owns that stock, try a patch request to update number of shares or delete to remove it')
 
-        stock = StockModel(ticker=args['ticker'].upper(), number_of_shares=args['number_of_shares'], cost_per_share=args['cost_per_share'], owner=current_user.id)
+        stock = StockModel(ticker=args['ticker'].upper(), number_of_shares=args['number_of_shares'], cost_per_share=args['cost_per_share'], owner=get_jwt()['id'])
 
         db.session.add(stock)
         db.session.commit()
@@ -47,6 +47,8 @@ class Stock(Resource):
     @marshal_with(stock_resource_fields)
     @jwt_required()
     def patch(self):
+        current_user = get_jwt_identity()
+        print(current_user)
         args = stock_patch_args.parse_args()
         stock = user_has_stock(get_jwt()['id'], args['ticker'])
         if stock:

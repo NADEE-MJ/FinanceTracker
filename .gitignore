@@ -139,3 +139,6 @@ dmypy.json
 
 # API key files
 ALPHA_VANTAGE_API_KEY.txt
+
+# Secret Codes
+SUPER_SECRET_CODE.txt

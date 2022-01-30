@@ -15,7 +15,6 @@ class UserModel(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    log_in = db.Column(db.Boolean, default=False)
     stocks = db.relationship('StockModel', backref='usermodel', passive_deletes=True)
     cryptos = db.relationship('CryptoModel', backref='usermodel', passive_deletes=True)
 
@@ -23,9 +22,6 @@ class UserModel(db.Model, UserMixin):
         return f'User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})'
 
     def login(self):
-        self.log_in = True
-        db.session.commit()
-
         additional_claims = {'email': self.email,
                             'id': self.id}
 
@@ -33,10 +29,6 @@ class UserModel(db.Model, UserMixin):
                 'refresh_token': create_refresh_token(identity=self.username)}
 
         return tokens
-
-    def logoff(self):
-        self.log_in = False
-        db.session.commit()
 
 class StockModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
