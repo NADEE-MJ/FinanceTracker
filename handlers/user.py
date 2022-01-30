@@ -63,7 +63,7 @@ class User(Resource):
     #logoff
     @jwt_required()
     def delete(self):
-        jti = get_jwt()["jti"]
+        jti = get_jwt()['jti']
         now = datetime.now(timezone.utc)
         db.session.add(TokenBlocklist(jti=jti, revoked_at=now))
         db.session.commit()
@@ -81,11 +81,11 @@ class Refresh(Resource):
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
-    return {'code': 'dave', 'error': 'I can\'t let you do that'}, 401
+    return {'message': 'invalid token or token expired'}, 401
 
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
-    jti = jwt_payload["jti"]
+    jti = jwt_payload['jti']
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
 
     return token is not None

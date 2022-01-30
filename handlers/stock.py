@@ -32,7 +32,7 @@ class Stock(Resource):
         if stock:
             return stock, 200
         
-        abort(404, message="stock not found")
+        abort(404, message='stock not found')
         
     @marshal_with(stock_resource_fields)
     @jwt_required(fresh=True)

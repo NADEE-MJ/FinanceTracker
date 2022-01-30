@@ -17,18 +17,19 @@ def create_code_file():
     f.write(code)
     f.close()
     print('super secret code file created!')
+    return code
 
 try:
     f = open('SUPER_SECRET_CODE.txt', 'r')
     code = f.readline()
     f.close()
 except FileNotFoundError:
-    create_code_file()
+    code = create_code_file()
 
-app.config['JWT_SECRET_KEY'] = 'super-secret' #NEED TO CHANGE THIS TO LOAD FROM FILE, BUT FOR TESTING THIS IS FINE
+app.config['SECRET_KEY'] = code #should be used for both flask and flask_jwt_extended
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = ACCESS_EXPIRES
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = REFRESH_EXPIRES
-app.config['JWT_TOKEN_LOCATION'] = ['json', 'headers']
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = REFRESH_EXPIRES
+app.config['JWT_TOKEN_LOCATION'] = ['json']
 jwt = JWTManager(app)
 
 api = Api(app)

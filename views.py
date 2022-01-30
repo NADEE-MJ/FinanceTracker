@@ -1,5 +1,5 @@
 from app import api, app
-from handlers.crypto import Crypto, Cryptos
+# from handlers.crypto import Crypto, Cryptos
 from handlers.stock import Stock, Stocks
 from handlers.user import User, Refresh
 
@@ -10,4 +10,4 @@ api.add_resource(Refresh, '/user/refresh', methods=['PUT'])
 
 @app.route('/', methods=['GET'])
 def index():
-    return 'Finance Tracker API'
+    return {'message': 'Finance Tracker API', 'github': 'https://github.com/NADEE-MJ/FinanceTracker'}
