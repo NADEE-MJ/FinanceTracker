@@ -21,9 +21,10 @@ still need to write this...
 ```
 
 ### FinanceTrackingAPI features to implement
-1. need to figure out how to remove old tokens from blocklist once implemented, maybe through a super user command
+1. need to figure out how to remove old access_tokens from blocklist after they expire, maybe through a super user command
 2. add super user or admin functionallity to view all users and all user info, maybe create a custom decorator
 3. ability to delete users
+4. ability to change username, email, and password
 
 ## Future Budget App Features
 I plan on creating this app in dart using flutter, creating back end api now, will implement front-end later.
