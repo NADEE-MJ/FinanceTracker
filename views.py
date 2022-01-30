@@ -1,9 +1,13 @@
+from re import U
 from app import api, app
-from stocks_resource import Stocks
-from stock_resource import Stock
+from handlers.stocks import Stocks
+from handlers.cryptos import Cryptos
+from handlers.stock import Stock
+from handlers.user import User
 
 api.add_resource(Stocks, '/stocks', methods=['GET'])
-api.add_resource(Stock, '/stock', methods=['GET', 'POST', 'DELETE', 'PATCH'])
+api.add_resource(Stock, '/stock', methods=['POST', 'GET'])
+api.add_resource(User, '/user', methods=['POST', 'PUT', 'DELETE'])
 
 @app.route('/', methods=['GET'])
 def index():

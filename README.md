@@ -12,14 +12,14 @@ still need to write this...
 (not final)
 ```
 / --> methods=['GET'] --> possibly a documentation page in HTML on how to use the API
-│──user --> redirect to documentation page
-│  │──/login --> methods=['POST'] --> login user grant access and refresh tokens
-│  │──/logout --> methods=['DELETE'] --> logout user revoke access and refresh tokens
-│  │──/refresh --> methods=['POST'] --> refresh access token via a refresh token
-│──stocks --> methods=['GET'] --> returns all stocks owned by a user
-│──stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock
-│──cryptos --> methods=['GET'] --> returns all cryptos owned by a user
-│──crypto --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one crypto, add a crypto, update a crypto, or delete a crypto
+│── user --> redirect to documentation page
+│   │── /login --> methods=['POST'] --> login user grant access and refresh tokens
+│   │── /logout --> methods=['DELETE'] --> logout user revoke access and refresh tokens
+│   │── /refresh --> methods=['POST'] --> refresh access token via a refresh token
+│── stocks --> methods=['GET'] --> returns all stocks owned by a user
+│── stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock
+│── cryptos --> methods=['GET'] --> returns all cryptos owned by a user
+│── crypto --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one crypto, add a crypto, update a crypto, or delete a crypto
 ```
 
 ### FinanceTrackingAPI features to implement
@@ -30,6 +30,7 @@ still need to write this...
 3. update stock model to include more stock info relating to user
 4. add crypto model and views in API
 5. offload alphavantage and yfianance API calls to client
+6. need to figure out how to remove old tokens from blocklist once implemented
 
 ## Budget App Features (Will work on in the future)
 I plan on creating this app in dart using flutter, but am trying to figure out how the backend would work first, then will learn how to create the frontend.
