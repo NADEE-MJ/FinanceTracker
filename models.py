@@ -4,10 +4,12 @@ from flask_jwt_extended import create_access_token, create_refresh_token
 
 from app import db
 
+
 class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False)
     revoked_at = db.Column(db.DateTime, nullable=False)
+
 
 class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -15,53 +17,67 @@ class UserModel(db.Model):
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    stocks = db.relationship('StockModel', backref='usermodel', passive_deletes=True)
-    cryptos = db.relationship('CryptoModel', backref='usermodel', passive_deletes=True)
+    stocks = db.relationship("StockModel", backref="usermodel", passive_deletes=True)
+    cryptos = db.relationship("CryptoModel", backref="usermodel", passive_deletes=True)
 
     def __repr__(self):
-        return f'User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})'
+        return f"User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})"
 
     def fresh_login(self):
-        tokens = {'access_token': create_access_token(identity=self.username, fresh=True), 
-                'refresh_token': create_refresh_token(identity=self.username)}
+        tokens = {
+            "access_token": create_access_token(identity=self.username, fresh=True),
+            "refresh_token": create_refresh_token(identity=self.username),
+        }
 
         return tokens
 
     def stale_login(self):
-        tokens = create_access_token(identity=self.username, fresh=False)
+        """creates a stale access_token using the objects username for the payload
 
-        return tokens
+        Returns:
+            string: JWT access_token
+        """
+        token = create_access_token(identity=self.username, fresh=False)
+
+        return token
+
 
 class StockModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ticker = db.Column(db.String(20))
     number_of_shares = db.Column(db.Float)
     cost_per_share = db.Column(db.Float)
-    owner = db.Column(db.Integer, db.ForeignKey('user_model.id', ondelete='CASCADE'), nullable=False)
-    
-    def __repr__(self):
-        return f'Stock(ticker = {self.ticker}, number_of_shares = {self.number_of_shares}, cost_per_share = {self.cost_per_share})'
+    owner = db.Column(
+        db.Integer, db.ForeignKey("user_model.id", ondelete="CASCADE"), nullable=False
+    )
 
-    def update_shares(self, new_shares):
+    def __repr__(self):
+        return f"Stock(ticker = {self.ticker}, number_of_shares = {self.number_of_shares}, cost_per_share = {self.cost_per_share})"
+
+    def update_shares(self, new_shares: float):
         self.number_of_shares = new_shares
         db.session.commit()
+
 
 class CryptoModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(20))
     number_of_coins = db.Column(db.Float)
     cost_per_coin = db.Column(db.Float)
-    owner = db.Column(db.Integer, db.ForeignKey('user_model.id', ondelete='CASCADE'), nullable=False)
-    
+    owner = db.Column(
+        db.Integer, db.ForeignKey("user_model.id", ondelete="CASCADE"), nullable=False
+    )
+
     def __repr__(self):
-        return f'Stock(symbol = {self.symbol}, number_of_coins = {self.number_of_coins}, cost_per_coin = {self.cost_per_coin})'
+        return f"Stock(symbol = {self.symbol}, number_of_coins = {self.number_of_coins}, cost_per_coin = {self.cost_per_coin})"
 
     def update_coins(self, new_coins):
         self.number_of_coins = new_coins
         db.session.commit()
 
-if __name__ == '__main__':
-    if not exists('database.db'):
-        print('Creating database tables...')
+
+if __name__ == "__main__":
+    if not exists("database.db"):
+        print("Creating database tables...")
         db.create_all()
-        print('Done!')
+        print("Done!")
