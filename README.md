@@ -28,10 +28,28 @@ still need to write this...
 
 ### FinanceTrackingAPI features to implement
 
-1. need to figure out how to remove old access_tokens from blocklist after they expire, maybe through a super user command
-2. add super user or admin functionality to view all users and all user info, maybe create a custom decorator
-3. ability to delete users
-4. ability to change username, email, and password
+1. need to figure out how to remove old access_tokens from blocklist after they expire, maybe through flask-apscheduler
+2. add super user or admin functionality to view all users and all user info, maybe through flask-praetorian
+3. ability to delete users, or delete account
+4. ability to change username, email, and password, maybe through flask-praetorian
+5. block ips that try to send requests to often maybe using flask-limiter
+6. switch from flask-jwt-extended to flask-praetorian
+7. need to add bank/crypto/stock accounts
+   1. for banks
+      1. store transactional info
+         1. amount
+         2. name
+         3. recurring + recurring date
+         4. category
+      2. bank account type savings/checking
+      3. name
+      4. get all account info together
+   2. for crypto/stocks
+      1. get all crypto and stocks info together
+      2. get all crytpo info
+      3. get all stock account info
+8. store user category spending
+9. user watchlist for stocks and crypto
 
 ## Future Budget App Features
 
