@@ -1,8 +1,14 @@
-from flask_restful import Resource, reqparse, marshal_with, abort
-from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
+from flask_restful import Resource, reqparse, fields, marshal_with, abort
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app import crypto_resource_fields, db
-from models import CryptoModel, UserModel
+from models import CryptoModel, UserModel, delete_from_database, add_to_database
+
+crypto_resource_fields = {
+    "id": fields.Integer,
+    "symbol": fields.String,
+    "number_of_coins": fields.Float,
+    "cost_per_coin": fields.Float,
+}
 
 crypto_post_args = reqparse.RequestParser()
 crypto_post_args.add_argument(
@@ -72,8 +78,7 @@ class Crypto(Resource):
             owner=current_user.id,
         )
 
-        db.session.add(crypto)
-        db.session.commit()
+        add_to_database(crypto)
 
         return crypto, 201
 
@@ -95,8 +100,7 @@ class Crypto(Resource):
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         crypto = user_has_crypto(current_user.id, args["symbol"])
         if crypto:
-            db.session.delete(crypto)
-            db.session.commit()
+            delete_from_database(crypto)
 
             return {"message": f"{crypto.symbol} successfully deleted"}
 

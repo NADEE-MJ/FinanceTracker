@@ -1,8 +1,10 @@
 from os.path import exists
 from sqlalchemy.sql import func
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
+from flask_sqlalchemy import SQLAlchemy
 
-from app import db
+db = SQLAlchemy()
+jwt = JWTManager()
 
 
 class TokenBlocklist(db.Model):
@@ -76,8 +78,24 @@ class CryptoModel(db.Model):
         db.session.commit()
 
 
-if __name__ == "__main__":
-    if not exists("database.db"):
-        print("Creating database tables...")
-        db.create_all()
-        print("Done!")
+@jwt.expired_token_loader
+def my_expired_token_callback(jwt_header, jwt_payload):
+    return {"message": "invalid token or token expired"}, 401
+
+
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    jti = jwt_payload["jti"]
+    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
+
+    return token is not None
+
+
+def add_to_database(item: object):
+    db.session.add(item)
+    db.session.commit()
+
+
+def delete_from_database(item: object):
+    db.session.delete(item)
+    db.session.commit()

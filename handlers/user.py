@@ -3,8 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import db, jwt
-from models import UserModel, TokenBlocklist
+from models import UserModel, TokenBlocklist, add_to_database, delete_from_database
 
 login_args = reqparse.RequestParser()
 login_args.add_argument("email", type=str, help="Must Include an email", required=True)
@@ -72,8 +71,7 @@ class User(Resource):
                 password=generate_password_hash(args["password1"], method="sha256"),
             )
 
-            db.session.add(new_user)
-            db.session.commit()
+            add_to_database(new_user)
 
             return {"message": "the user has been created"}
 
@@ -82,8 +80,7 @@ class User(Resource):
     def delete(self):
         jti = get_jwt()["jti"]
         now = datetime.now(timezone.utc)
-        db.session.add(TokenBlocklist(jti=jti, revoked_at=now))
-        db.session.commit()
+        add_to_database(TokenBlocklist(jti=jti, revoked_at=now))
         return {"message": "user logged out, access token revoked"}
 
 
@@ -96,16 +93,3 @@ class Refresh(Resource):
         token = current_user.stale_login()
 
         return {"access_token": token}
-
-
-@jwt.expired_token_loader
-def my_expired_token_callback(jwt_header, jwt_payload):
-    return {"message": "invalid token or token expired"}, 401
-
-
-@jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
-    jti = jwt_payload["jti"]
-    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
-
-    return token is not None

@@ -1,8 +1,14 @@
-from flask_restful import Resource, reqparse, marshal_with, abort
+from flask_restful import Resource, reqparse, fields, marshal_with, abort
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 
-from app import stock_resource_fields, db
-from models import StockModel, UserModel
+from models import StockModel, UserModel, add_to_database, delete_from_database
+
+stock_resource_fields = {
+    "id": fields.Integer,
+    "ticker": fields.String,
+    "number_of_shares": fields.Float,
+    "cost_per_share": fields.Float,
+}
 
 stock_post_args = reqparse.RequestParser()
 stock_post_args.add_argument(
@@ -72,8 +78,7 @@ class Stock(Resource):
             owner=current_user.id,
         )
 
-        db.session.add(stock)
-        db.session.commit()
+        add_to_database(stock)
 
         return stock, 201
 
@@ -95,8 +100,7 @@ class Stock(Resource):
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         stock = user_has_stock(current_user.id, args["ticker"])
         if stock:
-            db.session.delete(stock)
-            db.session.commit()
+            delete_from_database(stock)
 
             return {"message": f"{stock.ticker} successfully deleted"}
 
