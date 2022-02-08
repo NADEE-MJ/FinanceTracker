@@ -54,7 +54,11 @@ api = Api(app)
 # object wrapper for use by flask_sqlalchemy
 db = SQLAlchemy(app)
 
-limiter = Limiter(app, key_func=get_remote_address, default_limits=["1 per second"])
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["1 per second", "500 per hour", "1000 per day"],
+)
 
 # tells api how to format stock output
 stock_resource_fields = {

@@ -18,12 +18,12 @@ still need to write this...
 
 ```
 / --> methods=['GET'] --> returns github page for this project
-│── user --> methods=['POST', 'DELETE', 'PUT'] --> login, logout, and register users
-│   │── refresh --> methods=['PUT'] --> refresh access_token based on refresh token
-│── stocks --> methods=['GET'] --> returns all stocks owned by a user
-│── stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock --> for a usr
-│── cryptos --> methods=['GET'] --> returns all cryptos owned by a user
-│── crypto --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one crypto, add a crypto, update a crypto, or delete a crypto --> for a user
+├── user --> methods=['POST', 'DELETE', 'PUT'] --> login, logout, and register users
+│   ├── refresh --> methods=['PUT'] --> refresh access_token based on refresh token
+├── stocks --> methods=['GET'] --> returns all stocks owned by a user
+├── stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock --> for a usr
+├── cryptos --> methods=['GET'] --> returns all cryptos owned by a user
+├── crypto --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one crypto, add a crypto, update a crypto, or delete a crypto --> for a user
 ```
 
 ### FinanceTrackingAPI features to implement
