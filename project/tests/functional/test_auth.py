@@ -65,7 +65,7 @@ class TestAuth:
         response = test_client.get("/stocks", json=json)
         assert b"Missing" in response.data
 
-    def test_accessing_url_with_access_token_for_jwt_not_required_url(
+    def test_accessing_url_with_stale_access_token_for_jwt_not_required_url(
         self, test_client, test_users
     ):
         # login user
@@ -77,6 +77,20 @@ class TestAuth:
         response = test_client.put("/user/refresh", json=json)
 
         # access url with stale token
+        json = {"access_token": response.json.get("access_token", {})}
+        response = test_client.get("/stocks", json=json)
+
+        assert b"[]" in response.data
+        assert response.status_code == 200
+
+    def test_accessing_url_with_fresh_access_token_for_jwt_not_required_url(
+        self, test_client, test_users
+    ):
+        # login user
+        json = {"email": test_users[0].email, "password": test_users[0].password1}
+        response = test_client.put("/user", json=json)
+
+        # access url with fresh token
         json = {"access_token": response.json.get("access_token", {})}
         response = test_client.get("/stocks", json=json)
 
