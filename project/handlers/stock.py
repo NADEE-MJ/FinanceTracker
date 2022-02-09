@@ -43,7 +43,7 @@ class Stocks(Resource):
     @jwt_required()
     def get(self):
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        stocks = StockModel.query.filter_by(owner=current_user.id).all()
+        stocks = StockModel.query.filter_by(owner_id=current_user.id).all()
         return stocks, 200
 
 
@@ -75,7 +75,7 @@ class Stock(Resource):
             ticker=args["ticker"].upper(),
             number_of_shares=args["number_of_shares"],
             cost_per_share=args["cost_per_share"],
-            owner=current_user.id,
+            owner_id=current_user.id,
         )
 
         add_to_database(stock)
@@ -108,7 +108,7 @@ class Stock(Resource):
 
 
 def user_has_stock(id, ticker):
-    stocks = StockModel.query.filter_by(owner=id).all()
+    stocks = StockModel.query.filter_by(owner_id=id).all()
     for stock in stocks:
         if stock.ticker == ticker.upper():
             return stock

@@ -1,4 +1,6 @@
 from sqlalchemy.sql import func
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
 from flask_sqlalchemy import SQLAlchemy
 
@@ -18,8 +20,18 @@ class UserModel(db.Model):
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    stocks = db.relationship("StockModel", backref="usermodel", passive_deletes=True)
-    cryptos = db.relationship("CryptoModel", backref="usermodel", passive_deletes=True)
+    stocks = db.relationship(
+        "StockModel",
+        back_populates="owner",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
+    cryptos = db.relationship(
+        "CryptoModel",
+        back_populates="owner",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
 
     def __repr__(self):
         return f"User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})"
@@ -48,9 +60,8 @@ class StockModel(db.Model):
     ticker = db.Column(db.String(20))
     number_of_shares = db.Column(db.Float)
     cost_per_share = db.Column(db.Float)
-    owner = db.Column(
-        db.Integer, db.ForeignKey("user_model.id", ondelete="CASCADE"), nullable=False
-    )
+    owner_id = db.Column(db.Integer, db.ForeignKey("user_model.id", ondelete="CASCADE"))
+    owner = db.relationship("UserModel", back_populates="stocks")
 
     def __repr__(self):
         return f"Stock(ticker = {self.ticker}, number_of_shares = {self.number_of_shares}, cost_per_share = {self.cost_per_share})"
@@ -65,9 +76,8 @@ class CryptoModel(db.Model):
     symbol = db.Column(db.String(20))
     number_of_coins = db.Column(db.Float)
     cost_per_coin = db.Column(db.Float)
-    owner = db.Column(
-        db.Integer, db.ForeignKey("user_model.id", ondelete="CASCADE"), nullable=False
-    )
+    owner_id = db.Column(db.Integer, db.ForeignKey("user_model.id", ondelete="CASCADE"))
+    owner = db.relationship("UserModel", back_populates="stocks")
 
     def __repr__(self):
         return f"Stock(symbol = {self.symbol}, number_of_coins = {self.number_of_coins}, cost_per_coin = {self.cost_per_coin})"
@@ -75,6 +85,14 @@ class CryptoModel(db.Model):
     def update_coins(self, new_coins):
         self.number_of_coins = new_coins
         db.session.commit()
+
+
+# tells sqlite3 to accept foreign keys
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 @jwt.expired_token_loader

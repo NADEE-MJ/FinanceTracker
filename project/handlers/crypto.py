@@ -43,7 +43,7 @@ class Cryptos(Resource):
     @jwt_required()
     def get(self):
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        cryptos = CryptoModel.query.filter_by(owner=current_user.id).all()
+        cryptos = CryptoModel.query.filter_by(owner_id=current_user.id).all()
         return cryptos, 200
 
 
@@ -75,7 +75,7 @@ class Crypto(Resource):
             symbol=args["symbol"].upper(),
             number_of_coins=args["number_of_coins"],
             cost_per_coin=args["cost_per_coin"],
-            owner=current_user.id,
+            owner_id=current_user.id,
         )
 
         add_to_database(crypto)
@@ -108,7 +108,7 @@ class Crypto(Resource):
 
 
 def user_has_crypto(id, symbol):
-    cryptos = CryptoModel.query.filter_by(owner=id).all()
+    cryptos = CryptoModel.query.filter_by(owner_id=id).all()
     for crypto in cryptos:
         if crypto.symbol == symbol.upper():
             return crypto
