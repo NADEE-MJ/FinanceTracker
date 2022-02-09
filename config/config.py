@@ -5,7 +5,7 @@ from pathlib import Path
 
 def create_code_file():
     code = input("Enter super secret code: ")
-    f = open("SUPER_SECRET_CODE.txt", "w")
+    f = open("config\\SUPER_SECRET_CODE.txt", "w")
     f.write(code)
     f.close()
     print("super secret code file created!")
@@ -13,7 +13,7 @@ def create_code_file():
 
 
 try:
-    f = open("SUPER_SECRET_CODE.txt", "r")
+    f = open("config\\SUPER_SECRET_CODE.txt", "r")
     code = f.readline()
     f.close()
 except FileNotFoundError:

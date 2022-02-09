@@ -4,7 +4,6 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from models import db, jwt
-from os.path import exists
 
 # !move to somewhere else or maybe stay here idk
 api = Api()
@@ -18,11 +17,12 @@ def create_app(config_file: str):
     app = Flask(__name__)
     app.config.from_pyfile(config_file)
 
+    create_views(app)
+
     db.init_app(app)
     jwt.init_app(app)
+    api.init_app(app)
     limiter.init_app(app)
-
-    create_views(app)
 
     return app
 
@@ -31,8 +31,6 @@ def create_views(app):
     from handlers.crypto import Crypto, Cryptos
     from handlers.stock import Stock, Stocks
     from handlers.user import User, Refresh
-
-    api.init_app(app)
 
     api.add_resource(Stocks, "/stocks", methods=["GET"])
     api.add_resource(Stock, "/stock", methods=["POST", "GET", "PATCH", "DELETE"])
