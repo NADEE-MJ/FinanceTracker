@@ -1,4 +1,4 @@
-from models import StockModel, db
+from models import db
 from config.application_factory import create_app
 from os.path import exists
 import pytest
@@ -15,38 +15,90 @@ def test_client():
             yield test_client
 
 
-class FakeUser:
-    def __init__(self, email: str, username: str, password1: str, password2: str):
-        self.email = email
-        self.username = username
+class TestUser:
+    def __init__(self, password1, password2, email, username):
         self.password1 = password1
         self.password2 = password2
+        self.email = email
+        self.username = username
         self.access_token = None
         self.refresh_token = None
 
-    def save_tokens(self, access_token: str, refresh_token: str):
+    def login(self, access_token, refresh_token):
         self.access_token = access_token
         self.refresh_token = refresh_token
 
-
-@pytest.fixture(scope="module")
-def new_user():
-    new_user = FakeUser(
-        email="pytest@gmail.com",
-        username="pytest",
-        password1="pytestpass",
-        password2="pytestpass",
-    )
-    return new_user
+    def refresh_access_token(self, access_token):
+        self.access_token = access_token
 
 
 @pytest.fixture(scope="module")
-def existing_user():
-    pass
+def test_users():
+    users = []
+    for i in range(11):
+        user = TestUser(
+            f"password{i}", f"password{i}", f"email{i}@email.com", f"username{i}"
+        )
+        users.append(user)
+
+    # users 0-6 fail in different ways
+    users[0].email = users[0].email
+    users[1].username = users[2].username
+    users[2].password1 = "incorrect password"
+    users[3].username = "a"
+    users[4].password1 = "as"
+    users[5].password2 = "as"
+    users[6].email = "as"
+
+    return users
+
+
+class TestStock:
+    def __init__(self, ticker, number_of_shares, cost_per_share):
+        self.ticker = ticker
+        self.number_of_shares = number_of_shares
+        self.cost_per_share = cost_per_share
 
 
 @pytest.fixture(scope="module")
-def test_stock():
-    return StockModel(
-        ticker="aapl".upper(), number_of_shares=50, cost_per_share=20, owner=2
-    )
+def test_stocks():
+    tickers = [
+        "aapl",
+        "msft",
+        "t",
+        "intc",
+        "rklb",
+        "amd",
+        "tsla",
+        "nflx",
+        "rblx",
+        "spy",
+    ]
+    stocks = []
+    for i in range(len(tickers)):
+        temp = TestStock(
+            ticker=tickers[i], number_of_shares=i + 10, cost_per_share=i * 20
+        )
+        stocks.append(temp)
+
+    return stocks
+
+
+class TestCrypto:
+    def __init__(self, symbol, number_of_coins, cost_per_coin):
+        self.symbol = symbol
+        self.number_of_coins = number_of_coins
+        self.cost_per_coin = cost_per_coin
+
+
+@pytest.fixture(scope="module")
+def test_cryptos():
+    symbols = ["BTC", "ETH", "XLR", "DOGE", "HNT", "SHIB", "USDT", "ADA", "USDC", "BCH"]
+    cryptos = []
+    for i in range(len(symbols)):
+        temp = TestCrypto(
+            symbol=symbols[i], number_of_coins=i + 10, cost_per_coin=i * 20
+        )
+        cryptos.append(temp)
+
+    return cryptos
