@@ -44,7 +44,7 @@ class Stocks(Resource):
     def get(self):
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         stocks = StockModel.query.filter_by(owner=current_user.id).all()
-        return stocks, 201
+        return stocks, 200
 
 
 class Stock(Resource):

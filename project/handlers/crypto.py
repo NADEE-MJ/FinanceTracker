@@ -44,7 +44,7 @@ class Cryptos(Resource):
     def get(self):
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         cryptos = CryptoModel.query.filter_by(owner=current_user.id).all()
-        return cryptos, 201
+        return cryptos, 200
 
 
 class Crypto(Resource):
