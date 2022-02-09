@@ -1,6 +1,4 @@
-from test_user_handlers import set_json_register
-
-# TODO accessing required fresh page with fresh access_token
+from test_user_handler import set_json_register
 
 
 class TestAuth:
