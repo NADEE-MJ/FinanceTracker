@@ -7,10 +7,7 @@ from models import db, jwt
 
 # !move to somewhere else or maybe stay here idk
 api = Api()
-limiter = Limiter(
-    key_func=get_remote_address,
-    default_limits=["1 per second", "500 per hour", "1000 per day"],
-)
+limiter = Limiter(key_func=get_remote_address)
 
 
 def create_app(config_file: str):

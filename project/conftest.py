@@ -1,11 +1,14 @@
 from models import db
 from config.application_factory import create_app
 from os.path import exists
+from os import remove
 import pytest
 
 
 @pytest.fixture(scope="module")
 def test_client():
+    if exists("test_database.db"):
+        remove("test_database.db")
     app = create_app("config_test.py")
     if not exists("test_database.db"):
         db.create_all(app=app)
@@ -35,18 +38,18 @@ class TestUser:
 @pytest.fixture(scope="module")
 def test_users():
     users = []
-    for i in range(11):
+    for i in range(8):
         user = TestUser(
             f"password{i}", f"password{i}", f"email{i}@email.com", f"username{i}"
         )
         users.append(user)
 
-    # users 0-6 fail in different ways
-    users[0].email = users[0].email
-    users[1].username = users[2].username
-    users[2].password1 = "incorrect password"
-    users[3].username = "a"
-    users[4].password1 = "as"
+    # users 1-7 fail in different ways
+    users[1].email = users[0].email
+    users[2].username = users[0].username
+    users[3].password1 = "incorrect password"
+    users[4].username = "a"
+    users[5].password1 = "as"
     users[5].password2 = "as"
     users[6].email = "as"
 

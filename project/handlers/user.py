@@ -57,7 +57,7 @@ class User(Resource):
         elif username_exists:
             abort(409, message="Username is already in use.")
         elif args["password1"] != args["password2"]:
-            abort(400, message="Password don't match!")
+            abort(400, message="Passwords don't match!")
         elif len(args["username"]) < 2:
             abort(400, message="Username is too short.")
         elif len(args["password1"]) < 6:
