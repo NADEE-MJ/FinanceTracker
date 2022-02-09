@@ -84,6 +84,19 @@ class User(Resource):
         return {"message": "user logged out, access token revoked"}
 
 
+class DeleteUser(Resource):
+    @jwt_required(fresh=True)
+    def delete(self):
+        username = get_jwt_identity()
+        current_user = UserModel.query.filter_by(username=username).first()
+        if current_user:
+            delete_from_database(current_user)
+
+            return {"message": "user deleted successfully"}
+
+        abort(404, message="user does not exist")
+
+
 class Refresh(Resource):
     # refresh access_token
     @jwt_required(refresh=True)

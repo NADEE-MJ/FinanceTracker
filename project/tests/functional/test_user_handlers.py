@@ -1,4 +1,22 @@
 class TestUser:
+    def test_delete_user(self, test_client, test_users):
+        # register user
+        json = set_json_register(0, test_users)
+        response = test_client.post("/user", json=json)
+
+        # login user
+        json = {"email": test_users[0].email, "password": test_users[0].password1}
+        response = test_client.put("/user", json=json)
+
+        # delete user
+        json = {"access_token": response.json.get("access_token", {})}
+        response = test_client.delete("/user/delete", json=json)
+        assert b"user deleted successfully" in response.data
+
+        # try to delete deleted user, does not revoke access/refresh tokens
+        response = test_client.delete("/user/delete", json=json)
+        assert b"user does not exist" in response.data
+
     def test_register_user(self, test_client, test_users):
         json = set_json_register(0, test_users)
         response = test_client.post("/user", json=json)

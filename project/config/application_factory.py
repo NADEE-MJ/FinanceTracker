@@ -27,13 +27,14 @@ def create_app(config_file: str):
 def create_views(app):
     from handlers.crypto import Crypto, Cryptos
     from handlers.stock import Stock, Stocks
-    from handlers.user import User, Refresh
+    from handlers.user import User, DeleteUser, Refresh
 
     api.add_resource(Stocks, "/stocks", methods=["GET"])
     api.add_resource(Stock, "/stock", methods=["POST", "GET", "PATCH", "DELETE"])
     api.add_resource(Cryptos, "/cryptos", methods=["GET"])
     api.add_resource(Crypto, "/crypto", methods=["POST", "GET", "PATCH", "DELETE"])
     api.add_resource(User, "/user", methods=["POST", "PUT", "DELETE"])
+    api.add_resource(DeleteUser, "/user/delete", methods=["DELETE"])
     api.add_resource(Refresh, "/user/refresh", methods=["PUT"])
 
     @app.route("/", methods=["GET"])

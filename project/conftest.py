@@ -5,7 +5,7 @@ from os import remove
 import pytest
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def test_client():
     if exists("test_database.db"):
         remove("test_database.db")
