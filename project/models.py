@@ -77,7 +77,7 @@ class CryptoModel(db.Model):
     number_of_coins = db.Column(db.Float)
     cost_per_coin = db.Column(db.Float)
     owner_id = db.Column(db.Integer, db.ForeignKey("user_model.id", ondelete="CASCADE"))
-    owner = db.relationship("UserModel", back_populates="stocks")
+    owner = db.relationship("UserModel", back_populates="cryptos")
 
     def __repr__(self):
         return f"Stock(symbol = {self.symbol}, number_of_coins = {self.number_of_coins}, cost_per_coin = {self.cost_per_coin})"
