@@ -63,7 +63,7 @@ REGISTER_ARGS.add_argument(
 
 
 class User(Resource):
-    def put(self) -> tuple(dict, int):
+    def put(self) -> dict:
         """login user, if user exists, checks if password is correct, if correct
         creates fresh access_token and refresh_token and sends them to user,
         if password incorrect or the user doesn't exist then error
@@ -90,7 +90,7 @@ class User(Resource):
         else:
             abort(404, message="Email not found")
 
-    def post(self) -> tuple(dict, int):
+    def post(self) -> dict:
         """register user, checks if email or username are already in database,
         then checks password1 and password2 are equal, then checks username and
         password length, then checks email for validation, if all checks pass
@@ -131,7 +131,7 @@ class User(Resource):
             return {"message": "the user has been created"}
 
     @jwt_required()
-    def delete(self) -> tuple(dict, int):
+    def delete(self) -> dict:
         """log out user, gets username from jwt payload, adds access token to
         token blocklist with the token id and time revoked and returns logged
         out to user
@@ -149,7 +149,7 @@ class User(Resource):
 
 class DeleteUser(Resource):
     @jwt_required(fresh=True)
-    def delete(self) -> tuple(dict, int):
+    def delete(self) -> dict:
         """delete user account, gets username from jwt payload, if user in
         database then delete user from database and all related assets, otherwise
         return error
@@ -171,7 +171,7 @@ class DeleteUser(Resource):
 
 class Refresh(Resource):
     @jwt_required(refresh=True)
-    def put(self) -> tuple(dict, int):
+    def put(self) -> dict:
         """refresh access_token, gets username from jwt payload, gets user from
         database and creates a stale access_token
 
