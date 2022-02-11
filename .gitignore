@@ -142,4 +142,7 @@ ALPHA_VANTAGE_API_KEY.txt
 
 # Secret Codes
 SUPER_SECRET_CODE.txt
+SUPER_SECRET_CODE_TEST.txt
+
+#workspaces
 *.code-workspace

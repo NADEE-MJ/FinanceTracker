@@ -1,4 +1,6 @@
 class TestUser:
+    # TODO need to implement more tests for deleted users trying to access
+    # TODO things that they should not be able to
     def test_delete_user(self, test_client, test_users):
         # register user
         json = set_json_register(0, test_users)
