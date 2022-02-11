@@ -1,4 +1,4 @@
-from models import db
+from models import DB
 from config.application_factory import create_app
 from os.path import exists
 from os import remove
@@ -11,7 +11,7 @@ def test_client():
         remove("test_database.db")
     app = create_app("config_test.py")
     if not exists("test_database.db"):
-        db.create_all(app=app)
+        DB.create_all(app=app)
 
     with app.test_client() as test_client:
         with app.app_context():

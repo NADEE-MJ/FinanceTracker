@@ -1,115 +1,195 @@
+"""
+crypto views for the following urls /crypto, /cryptos, this module can return all
+cryptos that a user owns, get info on a single crypto a user owns, and add,
+update, or delete existing cryptos a user owns, please see readme.md for info on
+how to use api
+"""
 from flask_restful import Resource, reqparse, fields, marshal_with, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models import CryptoModel, UserModel, delete_from_database, add_to_database
 
-crypto_resource_fields = {
+# ? fields for how crypto output should be formatted, this is how data will be formatted
+# ? returned when the crypto resource is called
+RESOURCE_FIELDS = {
     "id": fields.Integer,
     "symbol": fields.String,
     "number_of_coins": fields.Float,
     "cost_per_coin": fields.Float,
 }
 
-crypto_post_args = reqparse.RequestParser()
-crypto_post_args.add_argument(
-    "symbol", type=str, help="Must Include a symbol", required=True
-)
-crypto_post_args.add_argument(
+"""
+*argument parser for post args
+*required args with examples are as follows:
+{
+    "symbol": "BTC",
+    "number_of_coins": 33.2,
+    "cost_per_coin": 34,000.23
+}
+"""
+POST_ARGS = reqparse.RequestParser()
+POST_ARGS.add_argument("symbol", type=str, help="Must Include a symbol", required=True)
+POST_ARGS.add_argument(
     "number_of_coins", type=float, help="Must Include number_of_coins", required=True
 )
-crypto_post_args.add_argument(
+POST_ARGS.add_argument(
     "cost_per_coin", type=float, help="Must Include number_of_coins", required=True
 )
 
-crypto_get_args = reqparse.RequestParser()
-crypto_get_args.add_argument(
-    "symbol", type=str, help="Must Include a symbol", required=True
-)
+"""
+*argument parser for get args
+*required args with examples are as follows:
+{
+    "symbol": "BTC"
+}
+"""
+GET_ARGS = reqparse.RequestParser()
+GET_ARGS.add_argument("symbol", type=str, help="Must Include a symbol", required=True)
 
-crypto_patch_args = reqparse.RequestParser()
-crypto_patch_args.add_argument(
-    "symbol", type=str, help="Must Include a symbol", required=True
-)
-crypto_patch_args.add_argument(
+"""
+*argument parser for patch args
+*required args with examples are as follows:
+{
+    "symbol": "BTC",
+    "new_number_of_coins": 31.5
+}
+"""
+PATCH_ARGS = reqparse.RequestParser()
+PATCH_ARGS.add_argument("symbol", type=str, help="Must Include a symbol", required=True)
+PATCH_ARGS.add_argument(
     "new_number_of_coins",
     type=float,
-    help="must include new_number_of_coins",
+    help="Must include new_number_of_coins",
     required=True,
 )
 
 
 class Cryptos(Resource):
-    @marshal_with(crypto_resource_fields)
+    @marshal_with(RESOURCE_FIELDS)
     @jwt_required()
-    def get(self):
+    def get(self) -> dict:
+        """returns all cryptos that a user owns, gets username from jwt payload,
+        and queries database for all cryptos owned by that user, no args required
+
+        Returns:
+            dict: [{cryptoModel}, {cryptoModel}...]
+            int: status_code == 200
+        """
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         cryptos = CryptoModel.query.filter_by(owner_id=current_user.id).all()
         return cryptos, 200
 
 
 class Crypto(Resource):
-    @marshal_with(crypto_resource_fields)
+    @marshal_with(RESOURCE_FIELDS)
     @jwt_required()
-    def get(self):
-        args = crypto_get_args.parse_args()
+    def get(self) -> dict:
+        """returns info on a certain crypto owned by a user, takes GET_ARGS and
+        will return info on the crypto if the user owns it, otherwise returns
+        crypto not found
+
+        Returns:
+            dict: {cryptoModel} or {"message": "crypto not found"}
+            int: status_code == 200 or 404
+        """
+        args = GET_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         crypto = user_has_crypto(current_user.id, args["symbol"])
         if crypto:
             return crypto, 200
+        else:
+            abort(404, message="crypto not found")
 
-        abort(404, message="crypto not found")
-
-    @marshal_with(crypto_resource_fields)
+    @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
-    def post(self):
-        args = crypto_post_args.parse_args()
+    def post(self) -> dict:
+        """add new crypto to database under current user, given POST_ARGS first
+        check if user already owns that crypto, or create new cryptoModel and
+        add it to the database
+
+        Returns:
+            dict: {cryptoModel} or {"message": "user already owns that crypto"}
+            int: status_code == 201 or 400
+        """
+        args = POST_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         crypto = user_has_crypto(current_user.id, args["symbol"])
+
         if crypto:
             abort(
                 400,
                 message="user already owns that crypto, try a patch request to update number of coins or delete to remove it",
             )
+        else:
+            crypto = CryptoModel(
+                symbol=args["symbol"].upper(),
+                number_of_coins=args["number_of_coins"],
+                cost_per_coin=args["cost_per_coin"],
+                owner_id=current_user.id,
+            )
 
-        crypto = CryptoModel(
-            symbol=args["symbol"].upper(),
-            number_of_coins=args["number_of_coins"],
-            cost_per_coin=args["cost_per_coin"],
-            owner_id=current_user.id,
-        )
+            add_to_database(crypto)
 
-        add_to_database(crypto)
+            return crypto, 201
 
-        return crypto, 201
-
-    @marshal_with(crypto_resource_fields)
+    @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
-    def patch(self):
-        args = crypto_patch_args.parse_args()
+    def patch(self) -> dict:
+        """updates values for a given crypto that a user owns, given PATCH_ARGS
+        check if the user owns that crypto, if so update number_of_coins, else
+        say user does not own that crypto
+
+        Returns:
+            dict: {cryptoModel} or {"message": "user does not own that crypto"}
+            int: status_code == 200, 404
+        """
+        args = PATCH_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         crypto = user_has_crypto(current_user.id, args["symbol"])
+
         if crypto:
             crypto.update_coins(args["new_number_of_coins"])
             return crypto, 200
-
-        abort(404, message="user does not own that crypto")
+        else:
+            abort(404, message="user does not own that crypto")
 
     @jwt_required(fresh=True)
-    def delete(self):
-        args = crypto_get_args.parse_args()
+    def delete(self) -> dict:
+        """deletes a crypto that a user owns, given GET_ARGS check if the user
+        owns that crypto, if so delete it, else say user does not own that crypto
+
+        Returns:
+            dict: {"message": "successfully deleted" or "user does not own that
+            crypto"}
+            int: status_code == 200, 404
+        """
+        args = GET_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         crypto = user_has_crypto(current_user.id, args["symbol"])
+
         if crypto:
             delete_from_database(crypto)
 
             return {"message": f"{crypto.symbol} successfully deleted"}
+        else:
+            abort(404, message="user does not own that crypto")
 
-        abort(404, message="user does not own that crypto")
 
+def user_has_crypto(id: int, symbol: str) -> object or bool:
+    """checks if user owns a certain crypto, if they do return that cryptoModel
+    or return false
 
-def user_has_crypto(id, symbol):
+    Args:
+        id (int): id of the user
+        symbol (str): symbol of crypto being looked up
+
+    Returns:
+        object or bool: cryptoModel or False
+    """
     cryptos = CryptoModel.query.filter_by(owner_id=id).all()
+
     for crypto in cryptos:
         if crypto.symbol == symbol.upper():
             return crypto
+
     return False

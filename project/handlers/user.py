@@ -165,8 +165,8 @@ class DeleteUser(Resource):
             delete_from_database(current_user)
 
             return {"message": "user deleted successfully"}
-
-        abort(404, message="user does not exist")
+        else:
+            abort(404, message="user does not exist")
 
 
 class Refresh(Resource):
