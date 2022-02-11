@@ -7,7 +7,8 @@ The following module creates all the fixtures that pytest uses to run the tests
 ?to create the parameter when the testing session starts, scope="module" will
 ?recreate the parameter for each testing module
 
-run this command to run all tests "pytest --setup-show -cov=project"
+run this command to run all tests "pytest --cov=project --cov-report html:htmlcov"
+saves coverage report in /htmlcov folder
 """
 from models import DB
 from config.application_factory import create_app
@@ -19,7 +20,7 @@ import pytest
 @pytest.fixture(scope="session")
 def test_client():
     """generates a test_client for the flask app with test configuration, creates
-    a test database and returns the client
+    a test database, and test secret code and returns the client
 
     Yields:
         Iterator[object]: flask test_client object
@@ -71,7 +72,7 @@ def test_users() -> list:
 
     users[1].email = users[0].email  # !same email as user 0
     users[2].username = users[0].username  # !same username as user 0
-    users[3].password1 = "incorrect password" # !passwords don't match
+    users[3].password1 = "incorrect password"  # !passwords don't match
     users[4].username = "a"  # !username too short
     users[5].password1 = "as"  # !password too short
     users[5].password2 = "as"  # !password too short
