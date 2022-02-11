@@ -72,7 +72,7 @@ class Cryptos(Resource):
         and queries database for all cryptos owned by that user, no args required
 
         Returns:
-            dict: [{cryptoModel}, {cryptoModel}...]
+            dict: [{CryptoModel}, {CryptoModel}...]
             int: status_code == 200
         """
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
@@ -89,7 +89,7 @@ class Crypto(Resource):
         crypto not found
 
         Returns:
-            dict: {cryptoModel} or {"message": "crypto not found"}
+            dict: {CryptoModel} or {"message": "crypto not found"}
             int: status_code == 200 or 404
         """
         args = GET_ARGS.parse_args()
@@ -104,11 +104,11 @@ class Crypto(Resource):
     @jwt_required(fresh=True)
     def post(self) -> dict:
         """add new crypto to database under current user, given POST_ARGS first
-        check if user already owns that crypto, or create new cryptoModel and
+        check if user already owns that crypto, or create new CryptoModel and
         add it to the database
 
         Returns:
-            dict: {cryptoModel} or {"message": "user already owns that crypto"}
+            dict: {CryptoModel} or {"message": "user already owns that crypto"}
             int: status_code == 201 or 400
         """
         args = POST_ARGS.parse_args()
@@ -140,7 +140,7 @@ class Crypto(Resource):
         say user does not own that crypto
 
         Returns:
-            dict: {cryptoModel} or {"message": "user does not own that crypto"}
+            dict: {CryptoModel} or {"message": "user does not own that crypto"}
             int: status_code == 200, 404
         """
         args = PATCH_ARGS.parse_args()
@@ -176,7 +176,7 @@ class Crypto(Resource):
 
 
 def user_has_crypto(id: int, symbol: str) -> object or bool:
-    """checks if user owns a certain crypto, if they do return that cryptoModel
+    """checks if user owns a certain crypto, if they do return that CryptoModel
     or return false
 
     Args:
@@ -184,7 +184,7 @@ def user_has_crypto(id: int, symbol: str) -> object or bool:
         symbol (str): symbol of crypto being looked up
 
     Returns:
-        object or bool: cryptoModel or False
+        object or bool: CryptoModel or False
     """
     cryptos = CryptoModel.query.filter_by(owner_id=id).all()
 

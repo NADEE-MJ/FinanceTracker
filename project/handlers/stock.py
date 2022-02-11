@@ -72,7 +72,7 @@ class Stocks(Resource):
         and queries database for all stocks owned by that user, no args required
 
         Returns:
-            dict: [{stockModel}, {stockModel}...]
+            dict: [{StockModel}, {StockModel}...]
             int: status_code == 200
         """
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
@@ -89,7 +89,7 @@ class Stock(Resource):
         stock not found
 
         Returns:
-            dict: {stockModel} or {"message": "stock not found"}
+            dict: {StockModel} or {"message": "stock not found"}
             int: status_code == 200 or 404
         """
         args = GET_ARGS.parse_args()
@@ -104,11 +104,11 @@ class Stock(Resource):
     @jwt_required(fresh=True)
     def post(self) -> dict:
         """add new stock to database under current user, given POST_ARGS first
-        check if user already owns that stock, or create new stockModel and
+        check if user already owns that stock, or create new StockModel and
         add it to the database
 
         Returns:
-            dict: {stockModel} or {"message": "user already owns that stock"}
+            dict: {StockModel} or {"message": "user already owns that stock"}
             int: status_code == 201 or 400
         """
         args = POST_ARGS.parse_args()
@@ -140,7 +140,7 @@ class Stock(Resource):
         say user does not own that stock
 
         Returns:
-            dict: {stockModel} or {"message": "user does not own that stock"}
+            dict: {StockModel} or {"message": "user does not own that stock"}
             int: status_code == 200, 404
         """
         args = PATCH_ARGS.parse_args()
@@ -175,7 +175,7 @@ class Stock(Resource):
 
 
 def user_has_stock(id: int, ticker: str) -> object or bool:
-    """checks if user owns a certain stock, if they do return that stockModel
+    """checks if user owns a certain stock, if they do return that StockModel
     or return false
 
     Args:
@@ -183,7 +183,7 @@ def user_has_stock(id: int, ticker: str) -> object or bool:
         ticker (str): ticker of stock being looked up
 
     Returns:
-        object or bool: stockModel or False
+        object or bool: StockModel or False
     """
     stocks = StockModel.query.filter_by(owner_id=id).all()
 
