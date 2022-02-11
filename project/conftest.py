@@ -1,3 +1,14 @@
+"""
+This project uses the pytest module to run all functional and unit tests.
+The following module creates all the fixtures that pytest uses to run the tests
+
+?the @pytest.fixture decorator tells pytest to use the following functions to
+?get parameters for the different testing methods, scope="session" tells pytest
+?to create the parameter when the testing session starts, scope="module" will
+?recreate the parameter for each testing module
+
+run this command to run all tests "pytest --setup-show -cov=project"
+"""
 from models import DB
 from config.application_factory import create_app
 from os.path import exists
@@ -7,6 +18,12 @@ import pytest
 
 @pytest.fixture(scope="session")
 def test_client():
+    """generates a test_client for the flask app with test configuration, creates
+    a test database and returns the client
+
+    Yields:
+        Iterator[object]: flask test_client object
+    """
     if exists("test_database.db"):
         remove("test_database.db")
     app = create_app("config_test.py")
@@ -19,7 +36,9 @@ def test_client():
 
 
 class TestUser:
-    def __init__(self, password1, password2, email, username):
+    def __init__(
+        self, password1: str, password2: str, email: str, username: str
+    ) -> None:
         self.password1 = password1
         self.password2 = password2
         self.email = email
@@ -27,44 +46,56 @@ class TestUser:
         self.access_token = None
         self.refresh_token = None
 
-    def login(self, access_token, refresh_token):
+    def login(self, access_token: str, refresh_token: str) -> None:
         self.access_token = access_token
         self.refresh_token = refresh_token
 
-    def refresh_access_token(self, access_token):
+    def refresh_access_token(self, access_token: str) -> None:
         self.access_token = access_token
 
 
 @pytest.fixture(scope="module")
-def test_users():
+def test_users() -> list:
+    """generates list of 7 test users, user index 0 has valid info, users with
+    index 1-6 all have invalid characteristics
+
+    Returns:
+        list: list of TestUser objects
+    """
     users = []
-    for i in range(8):
+    for i in range(7):
         user = TestUser(
-            f"password{i}", f"password{i}", f"email{i}@email.com", f"username{i}"
+            f"password{i}", f"password{i}", f"email{i}@gmail.com", f"username{i}"
         )
         users.append(user)
 
-    # users 1-7 fail in different ways
-    users[1].email = users[0].email
-    users[2].username = users[0].username
-    users[3].password1 = "incorrect password"
-    users[4].username = "a"
-    users[5].password1 = "as"
-    users[5].password2 = "as"
-    users[6].email = "as"
+    users[1].email = users[0].email  # !same email as user 0
+    users[2].username = users[0].username  # !same username as user 0
+    users[3].password1 = "incorrect password" # !passwords don't match
+    users[4].username = "a"  # !username too short
+    users[5].password1 = "as"  # !password too short
+    users[5].password2 = "as"  # !password too short
+    users[6].email = "as"  # !email too short
 
     return users
 
 
 class TestStock:
-    def __init__(self, ticker, number_of_shares, cost_per_share):
+    def __init__(
+        self, ticker: str, number_of_shares: float, cost_per_share: float
+    ) -> None:
         self.ticker = ticker
         self.number_of_shares = number_of_shares
         self.cost_per_share = cost_per_share
 
 
 @pytest.fixture(scope="module")
-def test_stocks():
+def test_stocks() -> list:
+    """generates list of 10 test stocks with real tickers
+
+    Returns:
+        list: list of TestStock objects
+    """
     tickers = [
         "aapl",
         "msft",
@@ -88,14 +119,21 @@ def test_stocks():
 
 
 class TestCrypto:
-    def __init__(self, symbol, number_of_coins, cost_per_coin):
+    def __init__(
+        self, symbol: str, number_of_coins: float, cost_per_coin: float
+    ) -> None:
         self.symbol = symbol
         self.number_of_coins = number_of_coins
         self.cost_per_coin = cost_per_coin
 
 
 @pytest.fixture(scope="module")
-def test_cryptos():
+def test_cryptos() -> list:
+    """generates list of 10 test cryptos with real symbols
+
+    Returns:
+        list: list of TestCrypto objects
+    """
     symbols = ["BTC", "ETH", "XLR", "DOGE", "HNT", "SHIB", "USDT", "ADA", "USDC", "BCH"]
     cryptos = []
     for i in range(len(symbols)):

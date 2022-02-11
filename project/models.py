@@ -39,7 +39,7 @@ class UserModel(DB.Model):
         passive_deletes=True,
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})"
 
     def fresh_login(self) -> dict:
@@ -75,7 +75,7 @@ class StockModel(DB.Model):
     owner_id = DB.Column(DB.Integer, DB.ForeignKey("user_model.id", ondelete="CASCADE"))
     owner = DB.relationship("UserModel", back_populates="stocks")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Stock(ticker = {self.ticker}, number_of_shares = {self.number_of_shares}, cost_per_share = {self.cost_per_share})"
 
     def update_shares(self, new_shares: float) -> None:
@@ -96,7 +96,7 @@ class CryptoModel(DB.Model):
     owner_id = DB.Column(DB.Integer, DB.ForeignKey("user_model.id", ondelete="CASCADE"))
     owner = DB.relationship("UserModel", back_populates="cryptos")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Stock(symbol = {self.symbol}, number_of_coins = {self.number_of_coins}, cost_per_coin = {self.cost_per_coin})"
 
     def update_coins(self, new_coins: float) -> None:
@@ -121,7 +121,7 @@ def set_sqlite_pragma(DBapi_connection, connection_record):
 # the following two functions with the @JWT decorators run everytime the @jwt_required
 # decorator is on a view
 @JWT.expired_token_loader
-def my_expired_token_callback(JWT_header, JWT_payload):
+def my_expired_token_callback(JWT_header, JWT_payload) -> dict:
     return {"message": "invalid token or token expired"}, 401
 
 
