@@ -54,6 +54,23 @@ class TestUser:
     def refresh_access_token(self, access_token: str) -> None:
         self.access_token = access_token
 
+    def login_info(self) -> dict[str:str]:
+        json = {"email": self.email, "password": self.password1}
+        return json
+
+    def register_info(self) -> dict[str:str]:
+        json = {
+            "email": self.email,
+            "username": self.username,
+            "password1": self.password1,
+            "password2": self.password2,
+        }
+        return json
+
+    def tokens(self) -> dict[str:str]:
+        json = {"access_token": self.access_token, "refresh_token": self.refresh_token}
+        return json
+
 
 @pytest.fixture(scope="module")
 def test_users() -> list:
