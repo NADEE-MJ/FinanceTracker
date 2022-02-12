@@ -72,12 +72,15 @@ class Cryptos(Resource):
         and queries database for all cryptos owned by that user, no args required
 
         Returns:
-            dict: [{CryptoModel}, {CryptoModel}...]
-            int: status_code == 200
+            dict: [{CryptoModel}, {CryptoModel}...] or {"message": "user does not exist"}
+            int: status_code == 200 or 404
         """
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        cryptos = CryptoModel.query.filter_by(owner_id=current_user.id).all()
-        return cryptos, 200
+        if current_user:
+            cryptos = CryptoModel.query.filter_by(owner_id=current_user.id).all()
+            return cryptos, 200
+        else:
+            abort(404, message="user does not exist")
 
 
 class Crypto(Resource):
@@ -89,16 +92,19 @@ class Crypto(Resource):
         crypto not found
 
         Returns:
-            dict: {CryptoModel} or {"message": "crypto not found"}
+            dict: {CryptoModel} or {"message": "crypto not found" or "user does not exist"}
             int: status_code == 200 or 404
         """
         args = GET_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        crypto = user_has_crypto(current_user.id, args["symbol"])
-        if crypto:
-            return crypto, 200
+        if current_user:
+            crypto = user_has_crypto(current_user.id, args["symbol"])
+            if crypto:
+                return crypto, 200
+            else:
+                abort(404, message="crypto not found")
         else:
-            abort(404, message="crypto not found")
+            abort(404, message="user does not exist")
 
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
@@ -108,29 +114,34 @@ class Crypto(Resource):
         add it to the database
 
         Returns:
-            dict: {CryptoModel} or {"message": "user already owns that crypto"}
-            int: status_code == 201 or 400
+            dict: {CryptoModel} or {"message": "user already owns that crypto"
+            or "user does not exist"}
+            int: status_code == 201 or 400 or 404
         """
         args = POST_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        crypto = user_has_crypto(current_user.id, args["symbol"])
+        if current_user:
+            crypto = user_has_crypto(current_user.id, args["symbol"])
 
-        if crypto:
-            abort(
-                400,
-                message="user already owns that crypto, try a patch request to update number of coins or delete to remove it",
-            )
+            if crypto:
+                abort(
+                    400,
+                    message="""user already owns that crypto, try a patch request
+                    to update number of coins or delete to remove it""",
+                )
+            else:
+                crypto = CryptoModel(
+                    symbol=args["symbol"].upper(),
+                    number_of_coins=args["number_of_coins"],
+                    cost_per_coin=args["cost_per_coin"],
+                    owner_id=current_user.id,
+                )
+
+                add_to_database(crypto)
+
+                return crypto, 201
         else:
-            crypto = CryptoModel(
-                symbol=args["symbol"].upper(),
-                number_of_coins=args["number_of_coins"],
-                cost_per_coin=args["cost_per_coin"],
-                owner_id=current_user.id,
-            )
-
-            add_to_database(crypto)
-
-            return crypto, 201
+            abort(404, message="user does not exist")
 
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
@@ -140,18 +151,22 @@ class Crypto(Resource):
         say user does not own that crypto
 
         Returns:
-            dict: {CryptoModel} or {"message": "user does not own that crypto"}
+            dict: {CryptoModel} or {"message": "user does not own that crypto"
+            or "user does not exist"}
             int: status_code == 200, 404
         """
         args = PATCH_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        crypto = user_has_crypto(current_user.id, args["symbol"])
+        if current_user:
+            crypto = user_has_crypto(current_user.id, args["symbol"])
 
-        if crypto:
-            crypto.update_coins(args["new_number_of_coins"])
-            return crypto, 200
+            if crypto:
+                crypto.update_coins(args["new_number_of_coins"])
+                return crypto, 200
+            else:
+                abort(404, message="user does not own that crypto")
         else:
-            abort(404, message="user does not own that crypto")
+            abort(404, message="user does not exist")
 
     @jwt_required(fresh=True)
     def delete(self) -> dict:
@@ -160,19 +175,22 @@ class Crypto(Resource):
 
         Returns:
             dict: {"message": "successfully deleted" or "user does not own that
-            crypto"}
+            crypto" or "user does not exist"}
             int: status_code == 200, 404
         """
         args = GET_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        crypto = user_has_crypto(current_user.id, args["symbol"])
+        if current_user:
+            crypto = user_has_crypto(current_user.id, args["symbol"])
 
-        if crypto:
-            delete_from_database(crypto)
+            if crypto:
+                delete_from_database(crypto)
 
-            return {"message": f"{crypto.symbol} successfully deleted"}
+                return {"message": f"{crypto.symbol} successfully deleted"}
+            else:
+                abort(404, message="user does not own that crypto")
         else:
-            abort(404, message="user does not own that crypto")
+            abort(404, message="user does not exist")
 
 
 def user_has_crypto(id: int, symbol: str) -> object or bool:

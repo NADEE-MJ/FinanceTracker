@@ -72,12 +72,15 @@ class Stocks(Resource):
         and queries database for all stocks owned by that user, no args required
 
         Returns:
-            dict: [{StockModel}, {StockModel}...]
-            int: status_code == 200
+            dict: [{StockModel}, {StockModel}...] or {"message": "user does not exist"}
+            int: status_code == 200 or 404
         """
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        stocks = StockModel.query.filter_by(owner_id=current_user.id).all()
-        return stocks, 200
+        if current_user:
+            stocks = StockModel.query.filter_by(owner_id=current_user.id).all()
+            return stocks, 200
+        else:
+            abort(404, message="user does not exist")
 
 
 class Stock(Resource):
@@ -89,16 +92,19 @@ class Stock(Resource):
         stock not found
 
         Returns:
-            dict: {StockModel} or {"message": "stock not found"}
+            dict: {StockModel} or {"message": "stock not found" or "user does not exist"}
             int: status_code == 200 or 404
         """
         args = GET_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        stock = user_has_stock(current_user.id, args["ticker"])
-        if stock:
-            return stock, 200
+        if current_user:
+            stock = user_has_stock(current_user.id, args["ticker"])
+            if stock:
+                return stock, 200
+            else:
+                abort(404, message="stock not found")
         else:
-            abort(404, message="stock not found")
+            abort(404, message="user does not exist")
 
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
@@ -108,29 +114,34 @@ class Stock(Resource):
         add it to the database
 
         Returns:
-            dict: {StockModel} or {"message": "user already owns that stock"}
-            int: status_code == 201 or 400
+            dict: {StockModel} or {"message": "user already owns that stock" or
+            "user does not exist"}
+            int: status_code == 201 or 400 or 404
         """
         args = POST_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        stock = user_has_stock(current_user.id, args["ticker"])
+        if current_user:
+            stock = user_has_stock(current_user.id, args["ticker"])
 
-        if stock:
-            abort(
-                400,
-                message="user already owns that stock, try a patch request to update number of shares or delete to remove it",
-            )
+            if stock:
+                abort(
+                    400,
+                    message="""user already owns that stock, try a patch request
+                    to update number of shares or delete to remove it""",
+                )
+            else:
+                stock = StockModel(
+                    ticker=args["ticker"].upper(),
+                    number_of_shares=args["number_of_shares"],
+                    cost_per_share=args["cost_per_share"],
+                    owner_id=current_user.id,
+                )
+
+                add_to_database(stock)
+
+                return stock, 201
         else:
-            stock = StockModel(
-                ticker=args["ticker"].upper(),
-                number_of_shares=args["number_of_shares"],
-                cost_per_share=args["cost_per_share"],
-                owner_id=current_user.id,
-            )
-
-            add_to_database(stock)
-
-            return stock, 201
+            abort(404, message="user does not exist")
 
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
@@ -140,18 +151,22 @@ class Stock(Resource):
         say user does not own that stock
 
         Returns:
-            dict: {StockModel} or {"message": "user does not own that stock"}
+            dict: {StockModel} or {"message": "user does not own that stock" or
+            "user does not exist"}
             int: status_code == 200, 404
         """
         args = PATCH_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        stock = user_has_stock(current_user.id, args["ticker"])
+        if current_user:
+            stock = user_has_stock(current_user.id, args["ticker"])
 
-        if stock:
-            stock.update_shares(args["new_number_of_shares"])
-            return stock, 200
+            if stock:
+                stock.update_shares(args["new_number_of_shares"])
+                return stock, 200
+            else:
+                abort(404, message="user does not own that stock")
         else:
-            abort(404, message="user does not own that stock")
+            abort(404, message="user does not exist")
 
     @jwt_required(fresh=True)
     def delete(self):
@@ -160,18 +175,21 @@ class Stock(Resource):
 
         Returns:
             dict: {"message": "successfully deleted" or "user does not own that
-            stock"}
+            stock" or "user does not exist"}
             int: status_code == 200, 404
         """
         args = GET_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
-        stock = user_has_stock(current_user.id, args["ticker"])
-        if stock:
-            delete_from_database(stock)
+        if current_user:
+            stock = user_has_stock(current_user.id, args["ticker"])
+            if stock:
+                delete_from_database(stock)
 
-            return {"message": f"{stock.ticker} successfully deleted"}
+                return {"message": f"{stock.ticker} successfully deleted"}
+            else:
+                abort(404, message="user does not own that stock")
         else:
-            abort(404, message="user does not own that stock")
+            abort(404, message="user does not exist")
 
 
 def user_has_stock(id: int, ticker: str) -> object or bool:
