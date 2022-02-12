@@ -181,6 +181,9 @@ class Refresh(Resource):
         """
         username = get_jwt_identity()
         current_user = UserModel.query.filter_by(username=username).first()
-        token = current_user.stale_login()
+        if current_user:
+            token = current_user.stale_login()
 
-        return {"access_token": token}
+            return {"access_token": token}
+        else:
+            abort(404, message="user does not exist")
