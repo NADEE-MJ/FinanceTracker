@@ -13,7 +13,7 @@ other good options to add:
     --setup-show will show the fixtures being created and destroyed
 saves coverage report in /htmlcov folder in main directory
 """
-from models import DB, UserModel, StockModel, CryptoModel
+from models import DB, UserModel, StockModel, CryptoModel, add_to_database
 from config.application_factory import create_app
 from os.path import exists
 from os import remove
@@ -177,7 +177,7 @@ def test_cryptos() -> list:
     return cryptos
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def test_user_model() -> object:
     """creates a single UserModel object
 
@@ -193,23 +193,17 @@ def test_user_model() -> object:
     return user
 
 
-@pytest.fixture(scope="module")
-def test_stock_model() -> list:
-    """creates list with a single user and a single stock
+@pytest.fixture(scope="function")
+def test_stock_model() -> tuple:
+    """creates tuple with a single stock, and the owner's id
 
     Returns:
-        list: [UserModel, StockModel]
+        tuple: (StockModel, owner_id)
     """
-    email = "pytest@test.com"
-    username = "testusername"
-    password = "testpassword"
-
-    user = UserModel(email=email, username=username, password=password)
-
     ticker = "test"
     number_of_shares = 100
     cost_per_share = 100
-    owner_id = user.id
+    owner_id = 1
 
     stock = StockModel(
         ticker=ticker,
@@ -218,26 +212,20 @@ def test_stock_model() -> list:
         owner_id=owner_id,
     )
 
-    return [user, stock]
+    return (stock, owner_id)
 
 
-@pytest.fixture(scope="module")
-def test_crypto_model() -> list:
-    """creates list with a single user and a single crypto
+@pytest.fixture(scope="function")
+def test_crypto_model() -> tuple:
+    """creates tuple with a single crypto, and the owner's id
 
     Returns:
-        list: [UserModel, CryptoModel]
+        tuple: (CryptoModel, owner_id)
     """
-    email = "pytest@test.com"
-    username = "testusername"
-    password = "testpassword"
-
-    user = UserModel(email=email, username=username, password=password)
-
     symbol = "test"
     number_of_coins = 100
     cost_per_coin = 100
-    owner_id = user.id
+    owner_id = 1
 
     crypto = CryptoModel(
         symbol=symbol,
@@ -246,4 +234,4 @@ def test_crypto_model() -> list:
         owner_id=owner_id,
     )
 
-    return [user, crypto]
+    return (crypto, owner_id)
