@@ -13,7 +13,7 @@ other good options to add:
     --setup-show will show the fixtures being created and destroyed
 saves coverage report in /htmlcov folder in main directory
 """
-from models import DB
+from models import DB, UserModel, StockModel, CryptoModel
 from config.application_factory import create_app
 from os.path import exists
 from os import remove
@@ -175,3 +175,75 @@ def test_cryptos() -> list:
         cryptos.append(temp)
 
     return cryptos
+
+
+@pytest.fixture(scope="module")
+def test_user_model() -> object:
+    """creates a single UserModel object
+
+    Returns:
+        object: UserModel
+    """
+    email = "pytest@test.com"
+    username = "testusername"
+    password = "testpassword"
+
+    user = UserModel(email=email, username=username, password=password)
+
+    return user
+
+
+@pytest.fixture(scope="module")
+def test_stock_model() -> list:
+    """creates list with a single user and a single stock
+
+    Returns:
+        list: [UserModel, StockModel]
+    """
+    email = "pytest@test.com"
+    username = "testusername"
+    password = "testpassword"
+
+    user = UserModel(email=email, username=username, password=password)
+
+    ticker = "test"
+    number_of_shares = 100
+    cost_per_share = 100
+    owner_id = user.id
+
+    stock = StockModel(
+        ticker=ticker,
+        number_of_shares=number_of_shares,
+        cost_per_share=cost_per_share,
+        owner_id=owner_id,
+    )
+
+    return [user, stock]
+
+
+@pytest.fixture(scope="module")
+def test_crypto_model() -> list:
+    """creates list with a single user and a single crypto
+
+    Returns:
+        list: [UserModel, CryptoModel]
+    """
+    email = "pytest@test.com"
+    username = "testusername"
+    password = "testpassword"
+
+    user = UserModel(email=email, username=username, password=password)
+
+    symbol = "test"
+    number_of_coins = 100
+    cost_per_coin = 100
+    owner_id = user.id
+
+    crypto = CryptoModel(
+        symbol=symbol,
+        number_of_coins=number_of_coins,
+        cost_per_coin=cost_per_coin,
+        owner_id=owner_id,
+    )
+
+    return [user, crypto]

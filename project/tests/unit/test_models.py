@@ -13,44 +13,28 @@ class TestTokens:
 
 
 class TestUserModel:
-    def test_create_user(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
+    def test_create_user(self, test_user_model: object) -> None:
+        user = test_user_model
 
-        user = UserModel(email=email, username=username, password=password)
+        assert user.email == "pytest@test.com"
+        assert user.username == "testusername"
+        assert user.password == "testpassword"
 
-        assert user.email == email
-        assert user.username == username
-        assert user.password == password
-
-    def test_repr_method(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
-
-        user = UserModel(email=email, username=username, password=password)
+    def test_repr_method(self, test_user_model: object) -> None:
+        user = test_user_model
         repr_string = user.__repr__()
 
         assert "User" in repr_string
 
-    def test_fresh_login(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
-
-        user = UserModel(email=email, username=username, password=password)
+    def test_fresh_login(self, test_user_model: object) -> None:
+        user = test_user_model
 
         tokens = user.fresh_login()
 
         assert "access_token" in tokens
 
-    def test_stale_login(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
-
-        user = UserModel(email=email, username=username, password=password)
+    def test_stale_login(self, test_user_model: object) -> None:
+        user = test_user_model
 
         token = user.stale_login()
 
@@ -58,71 +42,23 @@ class TestUserModel:
 
 
 class TestStockModel:
-    def test_create_stock(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
+    def test_create_stock(self, test_stock_model: object) -> None:
+        stock = test_stock_model[1]
 
-        user = UserModel(email=email, username=username, password=password)
+        assert stock.ticker == "test"
+        assert stock.number_of_shares == 100
+        assert stock.cost_per_share == 100
+        assert stock.owner_id == test_stock_model[0].id
 
-        ticker = "test"
-        number_of_shares = 100
-        cost_per_share = 1000
-        owner_id = user.id
-
-        stock = StockModel(
-            ticker=ticker,
-            number_of_shares=number_of_shares,
-            cost_per_share=cost_per_share,
-            owner_id=owner_id,
-        )
-
-        assert stock.ticker == ticker
-        assert stock.number_of_shares == number_of_shares
-        assert stock.cost_per_share == cost_per_share
-        assert stock.owner_id == owner_id
-
-    def test_repr_method(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
-
-        user = UserModel(email=email, username=username, password=password)
-
-        ticker = "test"
-        number_of_shares = 100
-        cost_per_share = 1000
-        owner_id = user.id
-
-        stock = StockModel(
-            ticker=ticker,
-            number_of_shares=number_of_shares,
-            cost_per_share=cost_per_share,
-            owner_id=owner_id,
-        )
+    def test_repr_method(self, test_stock_model: object) -> None:
+        stock = test_stock_model[1]
 
         repr_string = stock.__repr__()
 
         assert "Stock" in repr_string
 
-    def test_update_shares(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
-
-        user = UserModel(email=email, username=username, password=password)
-
-        ticker = "test"
-        number_of_shares = 100
-        cost_per_share = 1000
-        owner_id = user.id
-
-        stock = StockModel(
-            ticker=ticker,
-            number_of_shares=number_of_shares,
-            cost_per_share=cost_per_share,
-            owner_id=owner_id,
-        )
+    def test_update_shares(self, test_stock_model: object) -> None:
+        stock = test_stock_model[1]
 
         new_shares = 5
 
@@ -132,71 +68,23 @@ class TestStockModel:
 
 
 class TestCryptoModel:
-    def test_create_crypto(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
+    def test_create_crypto(self, test_crypto_model: object) -> None:
+        crypto = test_crypto_model[1]
 
-        user = UserModel(email=email, username=username, password=password)
+        assert crypto.symbol == "test"
+        assert crypto.number_of_coins == 100
+        assert crypto.cost_per_coin == 100
+        assert crypto.owner_id == test_crypto_model[0].id
 
-        symbol = "test"
-        number_of_coins = 100
-        cost_per_coin = 1000
-        owner_id = user.id
-
-        crypto = CryptoModel(
-            symbol=symbol,
-            number_of_coins=number_of_coins,
-            cost_per_coin=cost_per_coin,
-            owner_id=owner_id,
-        )
-
-        assert crypto.symbol == symbol
-        assert crypto.number_of_coins == number_of_coins
-        assert crypto.cost_per_coin == cost_per_coin
-        assert crypto.owner_id == owner_id
-
-    def test_repr_method(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
-
-        user = UserModel(email=email, username=username, password=password)
-
-        symbol = "test"
-        number_of_coins = 100
-        cost_per_coin = 1000
-        owner_id = user.id
-
-        crypto = CryptoModel(
-            symbol=symbol,
-            number_of_coins=number_of_coins,
-            cost_per_coin=cost_per_coin,
-            owner_id=owner_id,
-        )
+    def test_repr_method(self, test_crypto_model: object) -> None:
+        crypto = test_crypto_model[1]
 
         repr_string = crypto.__repr__()
 
         assert "Crypto" in repr_string
 
-    def test_update_coins(self) -> None:
-        email = "test@example.com"
-        username = "test"
-        password = "test"
-
-        user = UserModel(email=email, username=username, password=password)
-
-        symbol = "test"
-        number_of_coins = 100
-        cost_per_coin = 1000
-        owner_id = user.id
-
-        crypto = CryptoModel(
-            symbol=symbol,
-            number_of_coins=number_of_coins,
-            cost_per_coin=cost_per_coin,
-            owner_id=owner_id,
-        )
+    def test_update_coins(self, test_crypto_model: object) -> None:
+        crypto = test_crypto_model[1]
 
         new_coins = 5
 
