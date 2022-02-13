@@ -40,7 +40,7 @@ class UserModel(DB.Model):
     )
 
     def __repr__(self) -> str:
-        return f"User(email ={self.email}, username = {self.username}, date_created = {self.date_created}, log_in = {self.log_in})"
+        return f"User(email = {self.email}, username = {self.username}, date_created = {self.date_created})"
 
     def fresh_login(self) -> dict:
         """generates fresh access token and refresh token for user with their
@@ -64,7 +64,7 @@ class UserModel(DB.Model):
         """
         token = create_access_token(identity=self.username, fresh=False)
 
-        return token
+        return {"access_token": token}
 
 
 class StockModel(DB.Model):
@@ -97,7 +97,7 @@ class CryptoModel(DB.Model):
     owner = DB.relationship("UserModel", back_populates="cryptos")
 
     def __repr__(self) -> str:
-        return f"Stock(symbol = {self.symbol}, number_of_coins = {self.number_of_coins}, cost_per_coin = {self.cost_per_coin})"
+        return f"Crypto(symbol = {self.symbol}, number_of_coins = {self.number_of_coins}, cost_per_coin = {self.cost_per_coin})"
 
     def update_coins(self, new_coins: float) -> None:
         """updates number of coins the database

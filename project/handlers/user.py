@@ -190,6 +190,6 @@ class Refresh(Resource):
         if current_user:
             token = current_user.stale_login()
 
-            return {"access_token": token}
+            return token
         else:
             abort(404, message="user does not exist")
