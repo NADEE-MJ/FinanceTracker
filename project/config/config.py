@@ -38,7 +38,7 @@ PARENT_DIR = BASE_DIR.parent.parent.absolute()
 ACCESS_EXPIRES = timedelta(minutes=30)
 REFRESH_EXPIRES = timedelta(days=30)
 
-# default rate limiting amounts 1 request a second, 500 per hour, 1000 per day
+# default rate limiting amounts (requests / unit of time)
 RATE_LIMIT = "1/second;500/hour;1000/day"
 
 # !flask config settings do not change variable names

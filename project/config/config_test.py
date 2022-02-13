@@ -36,8 +36,8 @@ BASE_DIR = Path(path.abspath(path.dirname(__file__)))
 PARENT_DIR = BASE_DIR.parent.parent.absolute()
 
 # access and refresh token expiration
-ACCESS_EXPIRES = timedelta(minutes=30)
-REFRESH_EXPIRES = timedelta(days=30)
+ACCESS_EXPIRES = timedelta(seconds=5)
+REFRESH_EXPIRES = timedelta(seconds=5)
 
 # !flask config settings do not change variable names
 TESTING = True

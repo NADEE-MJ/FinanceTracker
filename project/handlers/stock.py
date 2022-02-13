@@ -1,7 +1,7 @@
 """
 stock views for the following urls /stock, /stocks, this module can return all
 stocks that a user owns, get info on a single stock a user owns, and add,
-update, or delete existing stocks a user owns, please see readme.md for info on
+update, or delete stocks for a user, please see readme.md for info on
 how to use api
 """
 from flask_restful import Resource, reqparse, fields, marshal_with, abort
@@ -10,7 +10,7 @@ from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from models import StockModel, UserModel, add_to_database, delete_from_database
 
 # ?fields for how stock output should be formatted, this is how data will be
-# ?formatted, returned when the stock resource is called
+# ?returned when the stock resource is called
 RESOURCE_FIELDS = {
     "id": fields.Integer,
     "ticker": fields.String,
@@ -68,11 +68,14 @@ class Stocks(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required()
     def get(self) -> dict:
-        """returns all stocks that a user owns, gets username from jwt payload,
-        and queries database for all stocks owned by that user, no args required
+        """returns all stocks that a user owns
+
+        Args:
+            access_token: FRESH or STALE
 
         Returns:
-            dict: [{StockModel}, {StockModel}...] or {"message": "user does not exist"}
+            dict: [{StockModel}, {StockModel}...] or
+                {"message": "user does not exist"}
             int: status_code == 200 or 404
         """
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
@@ -87,12 +90,15 @@ class Stock(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required()
     def get(self) -> dict:
-        """returns info on a certain stock owned by a user, takes GET_ARGS and
-        will return info on the stock if the user owns it, otherwise returns
-        stock not found
+        """returns info on a certain stock owned by a user
+
+        Args:
+            GET_ARGS
+            access_token: FRESH or STALE
 
         Returns:
-            dict: {StockModel} or {"message": "stock not found" or "user does not exist"}
+            dict: {StockModel} or {"message": "stock not found"
+                or "user does not exist"}
             int: status_code == 200 or 404
         """
         args = GET_ARGS.parse_args()
@@ -109,13 +115,15 @@ class Stock(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
     def post(self) -> dict:
-        """add new stock to database under current user, given POST_ARGS first
-        check if user already owns that stock, or create new StockModel and
-        add it to the database
+        """add new stock to database for current user
+
+        Args:
+            POST_ARGS
+            access_token: FRESH
 
         Returns:
             dict: {StockModel} or {"message": "user already owns that stock" or
-            "user does not exist"}
+                "user does not exist"}
             int: status_code == 201 or 400 or 404
         """
         args = POST_ARGS.parse_args()
@@ -126,8 +134,10 @@ class Stock(Resource):
             if stock:
                 abort(
                     400,
-                    message="""user already owns that stock, try a patch request
-                    to update number of shares or delete to remove it""",
+                    message=(
+                        "user already owns that stock, try a patch request"
+                        "to update number of shares or delete to remove it"
+                    ),
                 )
             else:
                 stock = StockModel(
@@ -146,13 +156,15 @@ class Stock(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
     def patch(self) -> dict:
-        """updates values for a given stock that a user owns, given PATCH_ARGS
-        check if the user owns that stock, if so update number_of_shares, else
-        say user does not own that stock
+        """updates number_of_shares for a given stock that a user owns
+
+        Args:
+            PATCH_ARGS
+            access_token: FRESH
 
         Returns:
             dict: {StockModel} or {"message": "user does not own that stock" or
-            "user does not exist"}
+                "user does not exist"}
             int: status_code == 200, 404
         """
         args = PATCH_ARGS.parse_args()
@@ -170,12 +182,15 @@ class Stock(Resource):
 
     @jwt_required(fresh=True)
     def delete(self):
-        """deletes a stock that a user owns, given GET_ARGS check if the user
-        owns that stock, if so delete it, else say user does not own that stock
+        """deletes a stock that a user owns
+
+        Args:
+            GET_ARGS
+            access_token: FRESH
 
         Returns:
             dict: {"message": "successfully deleted" or "user does not own that
-            stock" or "user does not exist"}
+                stock" or "user does not exist"}
             int: status_code == 200, 404
         """
         args = GET_ARGS.parse_args()
@@ -193,8 +208,7 @@ class Stock(Resource):
 
 
 def user_has_stock(id: int, ticker: str) -> object or bool:
-    """checks if user owns a certain stock, if they do return that StockModel
-    or return false
+    """checks if user owns a certain stock
 
     Args:
         id (int): id of the user

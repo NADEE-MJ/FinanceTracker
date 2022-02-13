@@ -1,7 +1,5 @@
 """
-Application factory is used to create instances of the flask app, all the views
-are passed into the create_app function which can be configured for real world
-usage or testing, then it is returned for use in other modules
+Application factory creates instances of the flask app
 """
 from flask import Flask
 from flask_restful import Api
@@ -19,7 +17,7 @@ def create_app(config_file: str) -> object:
 
     Args:
         config_file (str): should be a config.py file, there are two examples in
-        the config folder one for testing and one for running the server
+        the config folder one for testing and one for running a production server
 
     Returns:
         object: flask app instance

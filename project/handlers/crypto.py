@@ -1,7 +1,7 @@
 """
 crypto views for the following urls /crypto, /cryptos, this module can return all
 cryptos that a user owns, get info on a single crypto a user owns, and add,
-update, or delete existing cryptos a user owns, please see readme.md for info on
+update, or delete cryptos for a user, please see readme.md for info on
 how to use api
 """
 from flask_restful import Resource, reqparse, fields, marshal_with, abort
@@ -9,8 +9,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models import CryptoModel, UserModel, delete_from_database, add_to_database
 
-# ? fields for how crypto output should be formatted, this is how data will be formatted
-# ? returned when the crypto resource is called
+# ?fields for how crypto output should be formatted, this is how data will be
+# ?returned when the crypto resource is called
 RESOURCE_FIELDS = {
     "id": fields.Integer,
     "symbol": fields.String,
@@ -68,11 +68,14 @@ class Cryptos(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required()
     def get(self) -> dict:
-        """returns all cryptos that a user owns, gets username from jwt payload,
-        and queries database for all cryptos owned by that user, no args required
+        """returns all cryptos that a user owns
+
+        Args:
+            access_token: FRESH or STALE
 
         Returns:
-            dict: [{CryptoModel}, {CryptoModel}...] or {"message": "user does not exist"}
+            dict: [{CryptoModel}, {CryptoModel}...]
+                or {"message": "user does not exist"}
             int: status_code == 200 or 404
         """
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
@@ -87,12 +90,15 @@ class Crypto(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required()
     def get(self) -> dict:
-        """returns info on a certain crypto owned by a user, takes GET_ARGS and
-        will return info on the crypto if the user owns it, otherwise returns
-        crypto not found
+        """returns info on a certain crypto owned by a user
+
+        Args:
+            GET_ARGS
+            access_token: FRESH or STALE
 
         Returns:
-            dict: {CryptoModel} or {"message": "crypto not found" or "user does not exist"}
+            dict: {CryptoModel} or {"message": "crypto not found" or
+                "user does not exist"}
             int: status_code == 200 or 404
         """
         args = GET_ARGS.parse_args()
@@ -109,25 +115,28 @@ class Crypto(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
     def post(self) -> dict:
-        """add new crypto to database under current user, given POST_ARGS first
-        check if user already owns that crypto, or create new CryptoModel and
-        add it to the database
+        """add new crypto to database under current user
+
+        Args:
+            POST_ARGS
+            access_token: FRESH
 
         Returns:
             dict: {CryptoModel} or {"message": "user already owns that crypto"
-            or "user does not exist"}
+                or "user does not exist"}
             int: status_code == 201 or 400 or 404
         """
         args = POST_ARGS.parse_args()
         current_user = UserModel.query.filter_by(username=get_jwt_identity()).first()
         if current_user:
             crypto = user_has_crypto(current_user.id, args["symbol"])
-
             if crypto:
                 abort(
                     400,
-                    message="""user already owns that crypto, try a patch request
-                    to update number of coins or delete to remove it""",
+                    message=(
+                        "user already owns that crypto, try a patch request"
+                        "to update number of coins or delete to remove it"
+                    ),
                 )
             else:
                 crypto = CryptoModel(
@@ -136,7 +145,6 @@ class Crypto(Resource):
                     cost_per_coin=args["cost_per_coin"],
                     owner_id=current_user.id,
                 )
-
                 add_to_database(crypto)
 
                 return crypto, 201
@@ -146,13 +154,15 @@ class Crypto(Resource):
     @marshal_with(RESOURCE_FIELDS)
     @jwt_required(fresh=True)
     def patch(self) -> dict:
-        """updates values for a given crypto that a user owns, given PATCH_ARGS
-        check if the user owns that crypto, if so update number_of_coins, else
-        say user does not own that crypto
+        """updates values for a given crypto that a user owns
+
+        Args:
+            PATCH_ARGS
+            access_token: FRESH
 
         Returns:
             dict: {CryptoModel} or {"message": "user does not own that crypto"
-            or "user does not exist"}
+                or "user does not exist"}
             int: status_code == 200, 404
         """
         args = PATCH_ARGS.parse_args()
@@ -170,12 +180,15 @@ class Crypto(Resource):
 
     @jwt_required(fresh=True)
     def delete(self) -> dict:
-        """deletes a crypto that a user owns, given GET_ARGS check if the user
-        owns that crypto, if so delete it, else say user does not own that crypto
+        """deletes a crypto that a user owns
+
+        Args:
+            GET_ARGS
+            access_token: FRESH
 
         Returns:
             dict: {"message": "successfully deleted" or "user does not own that
-            crypto" or "user does not exist"}
+                crypto" or "user does not exist"}
             int: status_code == 200, 404
         """
         args = GET_ARGS.parse_args()
@@ -194,8 +207,7 @@ class Crypto(Resource):
 
 
 def user_has_crypto(id: int, symbol: str) -> object or bool:
-    """checks if user owns a certain crypto, if they do return that CryptoModel
-    or return false
+    """checks if user owns a certain crypto
 
     Args:
         id (int): id of the user
