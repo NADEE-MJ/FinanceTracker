@@ -1,6 +1,6 @@
 """
 stores all the different models for the different data types the app uses, this
-includes the TokenBlocklist, UserModel, StockModel, and CryptoModel
+includes TokenBlocklist, UserModel, StockModel, and CryptoModel
 """
 from sqlalchemy.sql import func
 from sqlalchemy.engine import Engine

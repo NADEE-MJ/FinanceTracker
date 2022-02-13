@@ -64,14 +64,15 @@ REGISTER_ARGS.add_argument(
 
 class User(Resource):
     def put(self) -> dict:
-        """login user, if user exists, checks if password is correct, if correct
-        creates fresh access_token and refresh_token and sends them to user,
-        if password incorrect or the user doesn't exist then error
+        """login user
+
+        Args:
+            LOGIN_ARGS
 
         Returns:
-            dict: {"message": "login success" or "wrong password" or "email not found",
-                "access_token": "str",
-                "refresh_token": "str"}
+            dict: {"message": "login success", "access_token": "str",
+                "refresh_token": "str"} or {"message": "wrong password" or
+                "email not found"}
             int: status_code == 200 or 400 or 404
         """
         args = LOGIN_ARGS.parse_args()
@@ -91,10 +92,10 @@ class User(Resource):
             abort(404, message="Email not found")
 
     def post(self) -> dict:
-        """register user, checks if email or username are already in database,
-        then checks password1 and password2 are equal, then checks username and
-        password length, then checks email for validation, if all checks pass
-        create a new user and add them to database
+        """register user
+
+        Args:
+            REGISTER_ARGS
 
         Returns:
             dict: {"message": "user created" or "email in use" or "username in user"
@@ -132,9 +133,10 @@ class User(Resource):
 
     @jwt_required()
     def delete(self) -> dict:
-        """log out user, gets username from jwt payload, adds access token to
-        token blocklist with the token id and time revoked and returns logged
-        out to user
+        """log out user
+
+        Args:
+            access_token: FRESH or STALE
 
         Returns:
             dict: {"message": "user logged out"}
@@ -150,12 +152,14 @@ class User(Resource):
 class DeleteUser(Resource):
     @jwt_required(fresh=True)
     def delete(self) -> dict:
-        """delete user account, gets username from jwt payload, if user in
-        database then delete user from database and all related assets, otherwise
-        return error
+        """delete user account
+
+        Args:
+            access_token: FRESH
 
         Returns:
-            dict: {"message": "user deleted successfully" or "user does not exist"}
+            dict: {"message": "user deleted successfully" or "user does
+                not exist"}
             int: status_code == 200 or 404
         """
         username = get_jwt_identity()
@@ -172,8 +176,10 @@ class DeleteUser(Resource):
 class Refresh(Resource):
     @jwt_required(refresh=True)
     def put(self) -> dict:
-        """refresh access_token, gets username from jwt payload, gets user from
-        database and creates a stale access_token
+        """refresh access_token, creates a stale access_token
+
+        Args:
+            refresh_token
 
         Returns:
             dict: {"access_token": str} or {"message": "user does not exist"}

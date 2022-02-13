@@ -4,7 +4,7 @@ to run the server, the built in server is not meant for production use. Please
 see the flask documentation for more info on how to deploy the server.
 
 !The first time this runs it will create the database file and ask for a secret key
-!code to encrypt the jwt tokens
+!to encrypt the jwt tokens
 """
 from config.application_factory import create_app
 from models import DB
@@ -20,8 +20,7 @@ if __name__ == "__main__":
         DB.create_all(app=APP)
         print("Done!")
 
-    # different ways to start flask server
     # ?debug will check for updates to code and refresh server automatically
-    APP.run(debug=True)  # ?localhost with debug
-    # APP.run(debug=True, host='0.0.0.0')  # ?host on network with debug
+    APP.run(debug=True)  # ?localhost with debug on
+    # APP.run(debug=True, host='0.0.0.0')  # ?host on network with debug on
     # APP.run(host='0.0.0.0')  # ?host on network no debug
