@@ -8,7 +8,10 @@ The following module creates all the fixtures that pytest uses to run the tests
 ?recreate the parameter for each testing module
 
 run this command to run all tests "pytest --cov=project --cov-report html:htmlcov"
-saves coverage report in /htmlcov folder
+other good options to add:
+    -s will capture output from the tests
+    --setup-show will show the fixtures being created and destroyed
+saves coverage report in /htmlcov folder in main directory
 """
 from models import DB
 from config.application_factory import create_app
@@ -47,18 +50,7 @@ class TestUser:
         self.access_token = None
         self.refresh_token = None
 
-    def login(self, access_token: str, refresh_token: str) -> None:
-        self.access_token = access_token
-        self.refresh_token = refresh_token
-
-    def refresh_access_token(self, access_token: str) -> None:
-        self.access_token = access_token
-
-    def login_info(self) -> dict[str:str]:
-        json = {"email": self.email, "password": self.password1}
-        return json
-
-    def register_info(self) -> dict[str:str]:
+    def register_info(self) -> dict:
         json = {
             "email": self.email,
             "username": self.username,
@@ -67,7 +59,29 @@ class TestUser:
         }
         return json
 
-    def tokens(self) -> dict[str:str]:
+    def register(self, client: object) -> None:
+        client.post("/user", json=self.register_info())
+
+    def login_info(self) -> dict:
+        json = {"email": self.email, "password": self.password1}
+        return json
+
+    def login(self, client: object) -> None:
+        response = client.put("/user", json=self.login_info())
+        self.access_token = response.json.get("access_token", {})
+        self.refresh_token = response.json.get("refresh_token", {})
+
+    def logout(self, client: object) -> None:
+        client.delete("/user", json=self.tokens())
+
+    def delete_user(self, client: object) -> None:
+        client.delete("/user/delete", json=self.tokens())
+
+    def refresh_access_token(self, client: object) -> None:
+        response = client.put("/user/refresh", json=self.tokens())
+        self.access_token = response.json.get("access_token", {})
+
+    def tokens(self) -> dict:
         json = {"access_token": self.access_token, "refresh_token": self.refresh_token}
         return json
 
