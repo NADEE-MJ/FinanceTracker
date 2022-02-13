@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 
 class TestTokens:
-    def test_create_blocked_token(self):
+    def test_create_blocked_token(self) -> None:
         jti = "test"
         now = datetime.now(timezone.utc)
         token = TokenBlocklist(jti=jti, revoked_at=now)
@@ -13,7 +13,7 @@ class TestTokens:
 
 
 class TestUserModel:
-    def test_create_user(self):
+    def test_create_user(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -24,7 +24,7 @@ class TestUserModel:
         assert user.username == username
         assert user.password == password
 
-    def test_repr_method(self):
+    def test_repr_method(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -34,7 +34,7 @@ class TestUserModel:
 
         assert "User" in repr_string
 
-    def test_fresh_login(self):
+    def test_fresh_login(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -45,7 +45,7 @@ class TestUserModel:
 
         assert "access_token" in tokens
 
-    def test_stale_login(self):
+    def test_stale_login(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -58,7 +58,7 @@ class TestUserModel:
 
 
 class TestStockModel:
-    def test_create_stock(self):
+    def test_create_stock(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -82,7 +82,7 @@ class TestStockModel:
         assert stock.cost_per_share == cost_per_share
         assert stock.owner_id == owner_id
 
-    def test_repr_method(self):
+    def test_repr_method(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -105,7 +105,7 @@ class TestStockModel:
 
         assert "Stock" in repr_string
 
-    def test_update_shares(self):
+    def test_update_shares(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -132,7 +132,7 @@ class TestStockModel:
 
 
 class TestCryptoModel:
-    def test_create_crypto(self):
+    def test_create_crypto(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -156,7 +156,7 @@ class TestCryptoModel:
         assert crypto.cost_per_coin == cost_per_coin
         assert crypto.owner_id == owner_id
 
-    def test_repr_method(self):
+    def test_repr_method(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
@@ -179,7 +179,7 @@ class TestCryptoModel:
 
         assert "Crypto" in repr_string
 
-    def test_update_coins(self):
+    def test_update_coins(self) -> None:
         email = "test@example.com"
         username = "test"
         password = "test"
