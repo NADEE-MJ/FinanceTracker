@@ -1,0 +1,3 @@
+# Setup Server with Gunicorn and NGINX
+
+I plan on doing this at some point, but still need to figure out how to do it...

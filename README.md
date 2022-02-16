@@ -1,37 +1,46 @@
 # FinanceTracker
 
-This is the API for a budgeting app I would like to create, possible features for the app are talked about at the bottom of the page. Possible names for the app are BudgetApp or SafeBets.
+## About
 
-## How to set up the API
+----------------------------------
 
-still need to write this...
+This is the API for a [budgeting app](docs/budgetapp.md) I would like to create.
 
-## How to use the API
+## Setup
 
-still need to write this...
+----------------------------------
 
-## Currently Working on
+please see [setup](docs/setup.md) page
 
-### API Tree Diagram
+## Endpoints
 
-(not final)
+----------------------------------
 
-```
-/ --> methods=['GET'] --> returns github page for this project
-├── user --> methods=['POST', 'DELETE', 'PUT'] --> login, logout, and register users
-│   ├── refresh --> methods=['PUT'] --> refresh access_token based on refresh token
-├── stocks --> methods=['GET'] --> returns all stocks owned by a user
-├── stock --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one stock, add a stock, update a stock, or delete a stock --> for a usr
-├── cryptos --> methods=['GET'] --> returns all cryptos owned by a user
-├── crypto --> methods=['GET', 'POST', 'PATCH', 'DELETE'] --> get one crypto, add a crypto, update a crypto, or delete a crypto --> for a user
-```
+| Endpoint | HTTP METHODS | WHAT IT DOES |
+| -------- | ------------ | ------------ |
+| `/` | [GET](/docs/get.md) | returns this github repo |
+| `/user` | [POST](/docs/user/post.md), [PUT](/docs/user/put.md), [DELETE](/docs/user/delete.md) | register, login, and logout user |
+| `/user/refresh` | [PUT](/docs/user/refresh/put.md) | refresh users access token |
+| `/user/delete` | [DELETE](/docs/user/delete/delete.md) | delete user from database |
+| `/stocks` | [GET](/docs/stock/get.md) | gets all stocks owned by a user |
+| `/stock` | [GET](/docs/stock/get.md), [POST](/docs/stock/post.md), [PATCH](/docs/stock/patch.md), [DELETE](/docs/stock/delete.md) | view, add, update, and remove a stock |
+| `/cryptos` | [GET](/docs/cryptos/get.md) | gets all cryptos owned by a user |
+| `/crypto` | [GET](/docs/crypto/get.md), [POST](/docs/crypto/post.md), [PATCH](/docs/crypto/patch.md), [DELETE](/docs/crypto/delete.md) | view, add, update, and remove a crypto |
 
-### FinanceTrackingAPI features to implement
+## Authentication
+
+----------------------------------
+
+Please see [auth](docs/auth.md) page.
+
+## FinanceTrackingAPI features to implement
+
+----------------------------------
 
 1. add email validation to user registration
-2. add super user or admin functionality to view all users and all user info, maybe through flask-praetorian
-3. ability to change username, email, and password, maybe through flask-praetorian
-4. switch from flask-jwt-extended to flask-praetorian
+2. switch from flask-jwt-extended to flask-praetorian
+3. add super user or admin functionality to view all users and all user info, maybe through flask-praetorian
+4. ability to change username, email, and password, maybe through flask-praetorian
 5. need to add bank/crypto/stock accounts
    1. for banks
       1. store transactional info

@@ -32,7 +32,7 @@ except FileNotFoundError:
 
 # determine where to store database, by default in the main directory
 BASE_DIR = Path(path.abspath(path.dirname(__file__)))
-PARENT_DIR = BASE_DIR.parent.parent.absolute()
+PARENT_DIR = BASE_DIR.parent.absolute()
 
 # access and refresh token expiration
 ACCESS_EXPIRES = timedelta(minutes=30)
@@ -47,6 +47,6 @@ RATELIMIT_DEFAULT = RATE_LIMIT
 SCHEDULER_API_ENABLED = False
 JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
 JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
-JWT_TOKEN_LOCATION = ["json"]
+JWT_TOKEN_LOCATION = ["headers"]
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + path.join(PARENT_DIR, "database.db")
