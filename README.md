@@ -32,28 +32,3 @@ please see [setup](docs/setup.md) page
 ----------------------------------
 
 Please see [auth](docs/auth.md) page.
-
-## FinanceTrackingAPI features to implement
-
-----------------------------------
-
-1. add email validation to user registration
-2. switch from flask-jwt-extended to flask-praetorian
-3. add super user or admin functionality to view all users and all user info, maybe through flask-praetorian
-4. ability to change username, email, and password, maybe through flask-praetorian
-5. need to add bank/crypto/stock accounts
-   1. for banks
-      1. store transactional info
-         1. amount
-         2. name
-         3. recurring + recurring date
-         4. category
-      2. bank account type savings/checking
-      3. name
-      4. get all account info together
-   2. for crypto/stocks
-      1. get all crypto and stocks info together
-      2. get all crypto info
-      3. get all stock account info
-6. store user category spending
-7. user watch list for stocks and crypto
