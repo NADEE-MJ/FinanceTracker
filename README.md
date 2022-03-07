@@ -2,19 +2,13 @@
 
 ## About
 
-----------------------------------
-
 This is the API for a [budgeting app](docs/budgetapp.md) I would like to create.
 
 ## Setup
 
-----------------------------------
-
 please see [setup](docs/setup.md) page
 
 ## Endpoints
-
-----------------------------------
 
 | Endpoint | HTTP METHODS | WHAT IT DOES |
 | -------- | ------------ | ------------ |
@@ -29,6 +23,6 @@ please see [setup](docs/setup.md) page
 
 ## Authentication
 
-----------------------------------
+This API uses [flask-jwt-extended](https://flask-jwt-extended.readthedocs.io/en/stable/) to authenticate users.
 
 Please see [auth](docs/auth.md) page.
