@@ -74,7 +74,7 @@ class TestUser:
         user = test_users[4]
         response = test_client.post("/user", json=user.register_info())
 
-        assert b"Username is too short" in response.data
+        assert b"Username must be between" in response.data
         assert response.status_code == 400
 
     def test_register_user_short_password(
@@ -92,7 +92,7 @@ class TestUser:
         user = test_users[6]
         response = test_client.post("/user", json=user.register_info())
 
-        assert b"Email is invalid" in response.data
+        assert b"Not a valid email address" in response.data
         assert response.status_code == 400
 
     def test_login_user_valid_email_and_password(

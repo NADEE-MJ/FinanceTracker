@@ -1,13 +1,3 @@
-"""
-The goal of this testing module is to berate the server with requests to test how
-well it handles ddos attacks and see how well flask_limiter is able to deal within
-this, it seems that with the limiter it is able to take over 1000 requests in
-rapid succession without breaking down
-
-?change times_to_request in main to up the number of requests made to the server,
-?this is currently configured to test the development server on localhost, if you
-?want to test anther ip then change base variable in main
-"""
 import requests, threading
 
 

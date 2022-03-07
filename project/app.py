@@ -3,11 +3,11 @@ This file runs the flask server, be sure to read the options below to choose how
 to run the server, the built in server is not meant for production use. Please
 see the flask documentation for more info on how to deploy the server.
 
-!The first time this runs it will create the database file and ask for a secret key
-!to encrypt the jwt tokens
+!The first time this runs it will create the database file
 """
 from config.application_factory import create_app
-from models import DB, TokenBlocklist, delete_from_database
+from config import DB
+from models import delete_from_database, TokenBlocklist
 from config.config import ACCESS_EXPIRES
 from os.path import exists
 from datetime import datetime
@@ -15,6 +15,7 @@ from flask_apscheduler import APScheduler
 
 SCHEDULER = APScheduler()
 APP = create_app("config.py")
+
 
 # scheduler tasks
 @SCHEDULER.task("interval", id="delete_expired_tokens", hours=1, misfire_grace_time=500)

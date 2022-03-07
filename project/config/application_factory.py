@@ -2,64 +2,74 @@
 Application factory creates instances of the flask app
 """
 from flask import Flask
-from flask_restful import Api
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from models import DB, JWT
+from flask_marshmallow import Marshmallow
+from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 
-API = Api()
+from .errors import register_error_handlers
+
+
+DB = SQLAlchemy()
+JWT = JWTManager()
+MA = Marshmallow()
 LIMITER = Limiter(key_func=get_remote_address)
 
 
 def create_app(config_file: str) -> object:
-    """creates flask app from config_file, adds views, initializes API, LIMITER,
-    JWT, and DB objects with the app
-
-    Args:
-        config_file (str): should be a config.py file, there are two examples in
-        the config folder one for testing and one for running a production server
-
-    Returns:
-        object: flask app instance
-    """
     app = Flask(__name__)
     app.config.from_pyfile(config_file)
 
     create_views(app)
+    register_error_handlers(app)
 
     DB.init_app(app)
+    MA.init_app(app)
     JWT.init_app(app)
-    API.init_app(app)
     LIMITER.init_app(app)
 
     return app
 
 
 def create_views(app: object) -> None:
-    """adds views to flask app using API resources from the flask_restful module
-    and using the built-in flask routes
+    from handlers import Crypto, Cryptos, Stock, Stocks, User, DeleteUser, Refresh
 
-    Args:
-        app (object): flask app instance
+    user_rule = "/api/user"
+    app.add_url_rule(
+        rule=user_rule + "/all-stocks",
+        endpoint="all-stocks",
+        view_func=Stocks.as_view("all-stocks"),
+    )
+    app.add_url_rule(
+        rule=user_rule + "/stock", endpoint="stock", view_func=Stock.as_view("stock")
+    )
+    app.add_url_rule(
+        rule=user_rule + "/all-cryptos",
+        endpoint="all-cryptos",
+        view_func=Cryptos.as_view("all-cryptos"),
+    )
+    app.add_url_rule(
+        rule=user_rule + "/crypto",
+        endpoint="crypto",
+        view_func=Crypto.as_view("crypto"),
+    )
+    app.add_url_rule(
+        rule=user_rule + "/logon",
+        endpoint="logon",
+        view_func=User.as_view("user"),
+    )
+    app.add_url_rule(
+        rule=user_rule + "/delete",
+        endpoint="delete",
+        view_func=DeleteUser.as_view("delete"),
+    )
+    app.add_url_rule(
+        rule=user_rule + "/refresh",
+        endpoint="refresh",
+        view_func=Refresh.as_view("refresh"),
+    )
 
-    Returns:
-        None: modifies object in place
-    """
-    # import resources
-    from handlers.crypto import Crypto, Cryptos
-    from handlers.stock import Stock, Stocks
-    from handlers.user import User, DeleteUser, Refresh
-
-    # Tell flask API what urls access which resources
-    API.add_resource(Stocks, "/stocks", methods=["GET"])
-    API.add_resource(Stock, "/stock", methods=["POST", "GET", "PATCH", "DELETE"])
-    API.add_resource(Cryptos, "/cryptos", methods=["GET"])
-    API.add_resource(Crypto, "/crypto", methods=["POST", "GET", "PATCH", "DELETE"])
-    API.add_resource(User, "/user", methods=["POST", "PUT", "DELETE"])
-    API.add_resource(DeleteUser, "/user/delete", methods=["DELETE"])
-    API.add_resource(Refresh, "/user/refresh", methods=["PUT"])
-
-    # extra routes
     @app.route("/", methods=["GET"])
     def index():
         return {
