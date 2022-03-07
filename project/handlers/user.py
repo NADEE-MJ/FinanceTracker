@@ -4,8 +4,7 @@ from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from webargs.flaskparser import use_args
 
-from models import UserModel, add_to_database
-from config import TokenBlocklist
+from models import UserModel, add_to_database, TokenBlocklist
 from schema import RegisterUserSchema, LoginUserSchema
 
 """

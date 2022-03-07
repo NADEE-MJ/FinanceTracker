@@ -1,5 +1,4 @@
-from config import TokenBlocklist
-from models import UserModel, StockModel, CryptoModel, add_to_database
+from models import UserModel, StockModel, CryptoModel, add_to_database, TokenBlocklist
 from datetime import datetime, timezone
 
 

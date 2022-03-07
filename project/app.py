@@ -7,8 +7,8 @@ see the flask documentation for more info on how to deploy the server.
 !to encrypt the jwt tokens
 """
 from config.application_factory import create_app
-from config import DB, TokenBlocklist
-from models import delete_from_database
+from config import DB
+from models import delete_from_database, TokenBlocklist
 from config.config import ACCESS_EXPIRES
 from os.path import exists
 from datetime import datetime

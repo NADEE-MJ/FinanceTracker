@@ -15,41 +15,6 @@ from .errors import register_error_handlers
 
 DB = SQLAlchemy()
 JWT = JWTManager()
-
-
-class TokenBlocklist(DB.Model):
-    id = DB.Column(DB.Integer, primary_key=True)
-    jti = DB.Column(DB.String(36), nullable=False)
-    revoked_at = DB.Column(DB.DateTime, nullable=False)
-
-
-# the following two functions with the @JWT decorators run everytime the @jwt_required
-# decorator is on a view
-@JWT.expired_token_loader
-def my_expired_token_callback(JWT_header, JWT_payload) -> dict:
-    return {"message": "invalid token or token expired"}, 401
-
-
-@JWT.token_in_blocklist_loader
-def check_if_token_revoked(JWT_header, JWT_payload: dict) -> bool:
-    jti = JWT_payload["jti"]
-    token = DB.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
-
-    return token is not None
-
-
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
-
-# tells sqlite3 to accept foreign keys, this is necessary for sqlite3 to be able
-# to cascade delete items that have relationships
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(DBapi_connection, connection_record):
-    cursor = DBapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
-
-
 API = Api()
 MA = Marshmallow()
 LIMITER = Limiter(key_func=get_remote_address)
