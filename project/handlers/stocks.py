@@ -1,11 +1,12 @@
-from flask_restful import Resource, abort
+from flask.views import MethodView
+from flask import abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models import StockModel, UserModel
 from schema import GetStockSchema
 
 
-class Stocks(Resource):
+class Stocks(MethodView):
     # returns all stocks that a user owns
     @jwt_required()
     def get(self) -> dict:

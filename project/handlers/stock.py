@@ -1,4 +1,5 @@
-from flask_restful import Resource, reqparse, abort
+from flask.views import MethodView
+from flask import abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from schema import GetStockSchema, PostStockSchema, PatchStockSchema
 from webargs.flaskparser import use_args
@@ -9,7 +10,7 @@ from models import StockModel, UserModel, add_to_database, delete_from_database
 SCHEMA = GetStockSchema()
 
 
-class Stock(Resource):
+class Stock(MethodView):
     # returns info on a certain stock owned by a user
     @use_args(GetStockSchema())
     @jwt_required()

@@ -1,10 +1,11 @@
-from flask_restful import Resource, abort
+from flask.views import MethodView
+from flask import abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models import CryptoModel, UserModel, delete_from_database, add_to_database
 
 
-class DeleteUser(Resource):
+class DeleteUser(MethodView):
     # delete user account
     @jwt_required(fresh=True)
     def delete(self) -> dict:

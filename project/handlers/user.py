@@ -1,4 +1,5 @@
-from flask_restful import Resource, abort
+from flask.views import MethodView
+from flask import abort
 from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,7 +9,7 @@ from models import UserModel, add_to_database, TokenBlocklist
 from schema import RegisterUserSchema, LoginUserSchema
 
 
-class User(Resource):
+class User(MethodView):
     # Login user
     @use_args(LoginUserSchema())
     def put(self, args) -> dict:

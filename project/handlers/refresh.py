@@ -1,10 +1,11 @@
-from flask_restful import Resource, abort
+from flask.views import MethodView
+from flask import abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models import UserModel
 
 
-class Refresh(Resource):
+class Refresh(MethodView):
     # refresh access_token, creates a stale access_token
     @jwt_required(refresh=True)
     def put(self) -> dict:

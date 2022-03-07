@@ -1,10 +1,11 @@
-from flask_restful import Resource, abort
+from flask.views import MethodView
+from flask import abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models import CryptoModel, UserModel
 
 
-class Cryptos(Resource):
+class Cryptos(MethodView):
     # returns all cryptos that a user owns
     @jwt_required()
     def get(self) -> dict:
