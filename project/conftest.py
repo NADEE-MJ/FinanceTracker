@@ -1,36 +1,18 @@
-"""
-This project uses the pytest module to run all functional and unit tests.
-The following module creates all the fixtures that pytest uses to run the tests
-
-?the @pytest.fixture decorator tells pytest to use the following functions to
-?get parameters for the different testing methods, scope="session" tells pytest
-?to create the parameter when the testing session starts, scope="module" will
-?recreate the parameter for each testing module
-
-run this command to run all tests "pytest --cov=project --cov-report html:htmlcov"
-other good options to add:
-    -s will capture output from the tests
-    --setup-show will show the fixtures being created and destroyed
-saves coverage report in /htmlcov folder in main directory
-"""
 from models import UserModel, StockModel, CryptoModel, add_to_database
 from config import create_app, DB
 from os.path import exists
-from os import remove
+from os import remove, path
+from pathlib import Path
 import pytest
 
 
 @pytest.fixture(scope="session")
 def test_client():
-    """generates a test_client for the flask app with test configuration, creates
-    a test database, and test secret code and returns the client
-
-    Yields:
-        Iterator[object]: flask test_client object
-    """
+    base_dir = Path(path.abspath(path.dirname(__file__)))
+    parent_dir = base_dir.parent.absolute()
     if exists("test_database.db"):
         remove("test_database.db")
-    app = create_app("config_test.py")
+    app = create_app(path.join(parent_dir, "project/tests/config.py"))
     if not exists("test_database.db"):
         DB.create_all(app=app)
 
@@ -86,14 +68,11 @@ class TestUser:
         return json
 
 
+# generates list of 7 test users, user index 0 has valid info, users with
+# index 1-6 all have invalid characteristics
 @pytest.fixture(scope="module")
 def test_users() -> list:
-    """generates list of 7 test users, user index 0 has valid info, users with
-    index 1-6 all have invalid characteristics
 
-    Returns:
-        list: list of TestUser objects
-    """
     users = []
     for i in range(7):
         user = TestUser(
@@ -123,11 +102,6 @@ class TestStock:
 
 @pytest.fixture(scope="module")
 def test_stocks() -> list:
-    """generates list of 10 test stocks with real tickers
-
-    Returns:
-        list: list of TestStock objects
-    """
     tickers = [
         "aapl",
         "msft",
@@ -161,11 +135,6 @@ class TestCrypto:
 
 @pytest.fixture(scope="module")
 def test_cryptos() -> list:
-    """generates list of 10 test cryptos with real symbols
-
-    Returns:
-        list: list of TestCrypto objects
-    """
     symbols = ["BTC", "ETH", "XLR", "DOGE", "HNT", "SHIB", "USDT", "ADA", "USDC", "BCH"]
     cryptos = []
     for i in range(len(symbols)):
@@ -179,11 +148,6 @@ def test_cryptos() -> list:
 
 @pytest.fixture(scope="function")
 def test_user_model() -> object:
-    """creates a single UserModel object
-
-    Returns:
-        object: UserModel
-    """
     email = "pytest@test.com"
     username = "testusername"
     password = "testpassword"
@@ -195,11 +159,6 @@ def test_user_model() -> object:
 
 @pytest.fixture(scope="function")
 def test_stock_model() -> tuple:
-    """creates tuple with a single stock, and the owner's id
-
-    Returns:
-        tuple: (StockModel, owner_id)
-    """
     ticker = "test"
     number_of_shares = 100
     cost_per_share = 100
@@ -217,11 +176,6 @@ def test_stock_model() -> tuple:
 
 @pytest.fixture(scope="function")
 def test_crypto_model() -> tuple:
-    """creates tuple with a single crypto, and the owner's id
-
-    Returns:
-        tuple: (CryptoModel, owner_id)
-    """
     symbol = "test"
     number_of_coins = 100
     cost_per_coin = 100

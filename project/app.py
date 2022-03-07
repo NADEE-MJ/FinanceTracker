@@ -3,8 +3,7 @@ This file runs the flask server, be sure to read the options below to choose how
 to run the server, the built in server is not meant for production use. Please
 see the flask documentation for more info on how to deploy the server.
 
-!The first time this runs it will create the database file and ask for a secret key
-!to encrypt the jwt tokens
+!The first time this runs it will create the database file
 """
 from config.application_factory import create_app
 from config import DB

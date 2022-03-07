@@ -10,20 +10,11 @@ SCHEMA = GetCryptoSchema()
 
 
 class Crypto(Resource):
+    #returns info on a certain crypto owned by a user
     @use_args(GetCryptoSchema())
     @jwt_required()
     def get(self, args) -> dict:
-        """returns info on a certain crypto owned by a user
 
-        Args:
-            GET_ARGS
-            access_token: FRESH or STALE
-
-        Returns:
-            dict: {CryptoModel} or {"message": "crypto not found" or
-                "user does not exist"}
-            int: status_code == 200 or 404
-        """
         current_user = UserModel.get_by_username(get_jwt_identity())
         if current_user:
             crypto = current_user.owns_crypto(args["symbol"])

@@ -7,19 +7,6 @@ from webargs.flaskparser import use_args
 from models import UserModel, add_to_database, TokenBlocklist
 from schema import RegisterUserSchema, LoginUserSchema
 
-"""
-?@jwt_required() decorator means that the json file passed to the api needs to
-?include a valid access_token with the format -> "access_token": str
-
-?@jwt_required(fresh=true) decorator means that the json file passed to the api
-?must include a fresh access_token with the format -> "access_token": str, this
-?can only be acquired through a fresh login, not through using a refresh_token
-
-?@jwt_required(refresh=true) decorator means that the json file passed to the api
-?must include a refresh token with the format -> "refresh_token": str, this can
-?only be acquired through a fresh login
-"""
-
 
 class User(Resource):
     # Login user
