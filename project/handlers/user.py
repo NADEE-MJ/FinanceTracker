@@ -1,9 +1,10 @@
 from flask.views import MethodView
-from flask import abort
+from flask import abort, Response
 from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from webargs.flaskparser import use_args
+from werkzeug.exceptions import HTTPException
 
 from models import UserModel, add_to_database, TokenBlocklist
 from schema import RegisterUserSchema, LoginUserSchema
@@ -24,9 +25,11 @@ class User(MethodView):
                     "refresh_token": tokens["refresh_token"],
                 }
             else:
-                abort(400, message="Password is incorrect.")
+                raise HTTPException(
+                    response=Response("Password is incorrect.", status=400)
+                )
         else:
-            abort(404, message="Email not found")
+            raise HTTPException()
 
     # Register User
     @use_args(RegisterUserSchema())
