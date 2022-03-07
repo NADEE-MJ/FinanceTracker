@@ -10,10 +10,10 @@ import pytest
 def test_client():
     base_dir = Path(path.abspath(path.dirname(__file__)))
     parent_dir = base_dir.parent.absolute()
+    app = create_app(path.join(parent_dir, "project/tests/config.py"))
     if exists("test_database.db"):
         remove("test_database.db")
-    app = create_app(path.join(parent_dir, "project/tests/config.py"))
-    if not exists("test_database.db"):
+    else:
         DB.create_all(app=app)
 
     with app.test_client() as test_client:

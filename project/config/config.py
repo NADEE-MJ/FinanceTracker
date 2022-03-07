@@ -3,7 +3,7 @@ config file for production use
 """
 
 from datetime import timedelta
-from os import path, environ
+from os import path, environ, mkdir
 from pathlib import Path
 
 
@@ -19,6 +19,10 @@ if environ.get("FLASK_SECRET_KEY") == None:
     print("please set 'FLASK_SECRET_KEY' in your environment variables")
     raise EnvironmentError
 
+DB_DIR = path.join(PARENT_DIR, "data")
+if not path.exists(DB_DIR):
+    mkdir(DB_DIR)
+
 SECRET_KEY = environ.get("FLASK_SECRET_KEY")
 RATELIMIT_DEFAULT = RATE_LIMIT
 SCHEDULER_API_ENABLED = False
@@ -26,4 +30,4 @@ JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
 JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
 JWT_TOKEN_LOCATION = ["headers"]
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + path.join(PARENT_DIR, "data/database.db")
+SQLALCHEMY_DATABASE_URI = "sqlite:///" + path.join(DB_DIR, "database.db")

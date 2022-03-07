@@ -4,7 +4,7 @@ rate limiting by default
 """
 
 from datetime import timedelta
-from os import path, environ
+from os import path, environ, mkdir
 from pathlib import Path
 
 
@@ -23,10 +23,14 @@ if environ.get("flask_secret_key") == None:
     print("please set 'flask_secret_key' in your environment variables")
     raise EnvironmentError
 
+DB_DIR = path.join(PARENT_DIR, "data")
+if not path.exists(DB_DIR):
+    mkdir(DB_DIR)
+
 SECRET_KEY = environ.get("flask_secret_key_test")
 RATELIMIT_ENABLED = False
 JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
 JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
 JWT_TOKEN_LOCATION = ["json"]
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + path.join(PARENT_DIR, "data/test_database.db")
+SQLALCHEMY_DATABASE_URI = "sqlite:///" + path.join(DB_DIR, "test_database.db")
