@@ -19,15 +19,15 @@ REFRESH_EXPIRES = timedelta(seconds=2)
 # !flask config settings do not change variable names
 TESTING = True
 
-if environ.get("flask_secret_key") == None:
-    print("please set 'flask_secret_key' in your environment variables")
+if environ.get("FLASK_SECRET_KEY_TEST") == None:
+    print("please set 'FLASK_SECRET_KEY_TEST' in your environment variables")
     raise EnvironmentError
 
 DB_DIR = path.join(PARENT_DIR, "data")
 if not path.exists(DB_DIR):
     mkdir(DB_DIR)
 
-SECRET_KEY = environ.get("flask_secret_key_test")
+SECRET_KEY = environ.get("FLASK_SECRET_KEY_TEST")
 RATELIMIT_ENABLED = False
 JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
 JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
