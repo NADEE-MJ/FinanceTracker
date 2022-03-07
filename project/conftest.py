@@ -13,8 +13,8 @@ other good options to add:
     --setup-show will show the fixtures being created and destroyed
 saves coverage report in /htmlcov folder in main directory
 """
-from models import DB, UserModel, StockModel, CryptoModel, add_to_database
-from config.application_factory import create_app
+from models import UserModel, StockModel, CryptoModel, add_to_database
+from config import create_app, DB
 from os.path import exists
 from os import remove
 import pytest

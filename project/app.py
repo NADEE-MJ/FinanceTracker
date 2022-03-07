@@ -7,7 +7,8 @@ see the flask documentation for more info on how to deploy the server.
 !to encrypt the jwt tokens
 """
 from config.application_factory import create_app
-from models import DB, TokenBlocklist, delete_from_database
+from config import DB, TokenBlocklist
+from models import delete_from_database
 from config.config import ACCESS_EXPIRES
 from os.path import exists
 from datetime import datetime
@@ -15,6 +16,7 @@ from flask_apscheduler import APScheduler
 
 SCHEDULER = APScheduler()
 APP = create_app("config.py")
+
 
 # scheduler tasks
 @SCHEDULER.task("interval", id="delete_expired_tokens", hours=1, misfire_grace_time=500)
