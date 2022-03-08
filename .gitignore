@@ -134,15 +134,8 @@ dmypy.json
 # VS Code Files
 /.vscode
 
-# testing files
-/.test
-
-# API key files
-ALPHA_VANTAGE_API_KEY.txt
-
-# Secret Codes
-SUPER_SECRET_CODE.txt
-SUPER_SECRET_CODE_TEST.txt
+# old files
+/.old
 
 #workspaces
 *.code-workspace
