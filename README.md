@@ -1,21 +1,21 @@
 <h1 align="center">
   <a href="https://github.com/NADEE-MJ/finance_tracker_api">
     <!-- Please provide path to your logo here -->
-    <img src="docs/images/logo.svg" alt="Logo" width="100" height="100">
+    <img src="docs/images/logo.svg" alt="Logo" width="150" height="150">
   </a>
 </h1>
 
 <div align="center">
-  Finance Tracker API
+  <b><font size="+4">Finance Tracker API</font></b>
   <br />
   <a href="#about"><strong>Explore the screenshots »</strong></a>
   <br />
   <br />
-  <a href="https://github.com/NADEE-MJ/finance_tracker_api/issues/new?assignees=&labels=bug&template=01_BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
+  <a href="https://github.com/NADEE-MJ/finance_tracker_api/issues/new?assignees=&labels=bug&template=bug_report.md&title=bug%3A+">Report a Bug</a>
   ·
-  <a href="https://github.com/NADEE-MJ/finance_tracker_api/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
+  <a href="https://github.com/NADEE-MJ/finance_tracker_api/issues/new?assignees=&labels=enhancement&template=feautre_request.md&title=feat%3A+">Request a Feature</a>
   .
-  <a href="https://github.com/NADEE-MJ/finance_tracker_api/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+">Ask a Question</a>
+  <a href="https://github.com/NADEE-MJ/finance_tracker_api/issues/new?assignees=&labels=question&template=support_question.md&title=support%3A+">Ask a Question</a>
 </div>
 
 <div align="center">
@@ -23,8 +23,8 @@
 
 [![Project license](https://img.shields.io/github/license/NADEE-MJ/finance_tracker_api.svg?style=flat-square)](LICENSE)
 
-[![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/NADEE-MJ/finance_tracker_api/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
-[![code with love by NADEE-MJ](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-NADEE-MJ-ff1414.svg?style=flat-square)](https://github.com/NADEE-MJ)
+[![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-5042bc.svg?style=flat-square)](https://github.com/NADEE-MJ/finance_tracker_api/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+[![code with love by NADEE-MJ](https://img.shields.io/badge/github-profile-ff1414.svg?style=flat-square)](https://github.com/NADEE-MJ)
 
 </div>
 
@@ -73,8 +73,7 @@
 
 ### Built With
 
-> **[?]**
-> Please provide the technologies that are used in the project.
+- [FastAPI](https://github.com/tiangolo/fastapi)
 
 ## Getting Started
 
@@ -103,9 +102,6 @@ See the [open issues](https://github.com/NADEE-MJ/finance_tracker_api/issues) fo
 - [Newest Bugs](https://github.com/NADEE-MJ/finance_tracker_api/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
 
 ## Support
-
-> **[?]**
-> Provide additional ways to contact the project maintainer/maintainers.
 
 Reach out to the maintainer at one of the following places:
 
@@ -139,6 +135,8 @@ See [LICENSE](LICENSE) for more information.
 
 ## Acknowledgements
 
-> **[?]**
-> If your work was funded by any organization or institution, acknowledge their support here.
-> In addition, if your work relies on other software libraries, or was inspired by looking at other work, it is appropriate to acknowledge this intellectual debt too.
+Thanks for these awesome resources that were used during the development of this project.
+
+- <https://github.com/tiangolo/fastapi>
+- <https://github.com/postgres/postgres>
+- <https://github.com/psf/black>
