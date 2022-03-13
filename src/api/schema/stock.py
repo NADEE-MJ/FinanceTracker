@@ -3,24 +3,30 @@ from pydantic import BaseModel
 
 # Shared properties
 class StockBase(BaseModel):
-    title: str | None = None
-    description: str | None = None
+    ticker: str | None = None
+    company_name: str | None = None
 
 
 # Properties to receive on stock creation
 class StockCreate(StockBase):
-    title: str
+    ticker: str
+    company_name: str
+    number_of_shares: int
+    cost_per_share: int
 
 
 # Properties to receive on stock update
 class StockUpdate(StockBase):
-    pass
+    number_of_shares: int
 
 
 # Properties shared by models stored in DB
 class StockInDBBase(StockBase):
     id: int
-    title: str
+    ticker: str
+    company_name: str
+    number_of_shares: int
+    cost_per_share: int
     owner_id: int
 
     class Config:
