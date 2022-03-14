@@ -22,7 +22,6 @@
 <br />
 
 [![Project license](https://img.shields.io/github/license/NADEE-MJ/finance_tracker_api.svg?style=flat-square)](LICENSE)
-
 [![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-5042bc.svg?style=flat-square)](https://github.com/NADEE-MJ/finance_tracker_api/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 [![code with love by NADEE-MJ](https://img.shields.io/badge/github-profile-ff1414.svg?style=flat-square)](https://github.com/NADEE-MJ)
 
