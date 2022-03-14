@@ -14,3 +14,6 @@ class User(Base):
     stocks = relationship(
         "Stock", back_populates="owner", cascade="all, delete", passive_deletes=True
     )
+    cryptos = relationship(
+        "Crypto", back_populates="owner", cascade="all, delete", passive_deletes=True
+    )
